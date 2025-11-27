@@ -4,10 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>Cập nhật thông tin - GamingController</title>
-
-    <!-- Theme CSS (your main stylesheet) -->
     <link rel="stylesheet" th:href="@{/css/theme-dark.css}" />
-    <!-- Optional extra small rules -->
     <style>
         /* local overrides to ensure visibility */
         body { background: linear-gradient(180deg,#020617 0%, #071028 100%); }
@@ -22,9 +19,6 @@
         .actions { margin-top:14px; display:flex; gap:12px; }
         .actions .col { flex:1; }
         @media (max-width:700px){ .actions{ flex-direction:column } }
-        /* ===========================
-   BACKGROUND PS5 STYLE
-   =========================== */
         body {
             background: radial-gradient(circle at 50% -20%, rgba(86,120,255,0.4), rgba(10,15,30,1)),
             radial-gradient(circle at 80% 120%, rgba(120,80,255,0.25), rgba(5,10,25,1)),
@@ -32,8 +26,6 @@
             background-attachment: fixed;
             overflow-x: hidden;
         }
-
-        /* Soft glowing light behind form */
         .glow-container {
             position: absolute;
             top: 0;
@@ -46,10 +38,6 @@
             z-index: -1;
             pointer-events: none;
         }
-
-        /* ===========================
-           CARD BEAUTIFY
-           =========================== */
         .card {
             background: rgba(15,20,40,0.66);
             backdrop-filter: blur(18px);
@@ -59,12 +47,9 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.55);
             transition: 0.3s ease;
         }
-
         .card:hover {
             box-shadow: 0 28px 60px rgba(0,0,0,0.7);
         }
-
-        /* Title enhancement */
         .section-title {
             font-size: 32px;
             font-weight: 900;
@@ -79,19 +64,14 @@
 <body>
 
 <div class="glow-container"></div>
-
-<!-- minimal header so page looks proper without layout -->
 <header class="site-bar">🎮 GamingController Store</header>
 
 <div class="page-wrap">
 
     <h1 class="section-title">Cập nhật thông tin</h1>
-
-    <!-- PROFILE FORM (standalone; no layout include) -->
     <div class="card mb-4">
         <form th:action="@{/account/profile}" th:object="${form}" method="post" style="margin:0;">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <!-- keep username hidden once -->
             <input type="hidden" id="username" th:field="*{username}" />
 
             <div style="margin-bottom:14px;">
@@ -125,7 +105,6 @@
         </form>
     </div>
 
-    <!-- SECURITY FORM (separate card) -->
     <div class="card">
         <form th:action="@{/account/profile/security}" method="post" style="margin:0;">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -164,7 +143,6 @@
 
 <footer style="text-align:center;padding:30px 0;color:rgba(255,255,255,0.6);">© 2025 GamingController Store</footer>
 
-<!-- quick client-side toggle (works even if main.js not available) -->
 <script>
     document.addEventListener('DOMContentLoaded', function(){
         const t = document.getElementById('togglePassBtn');

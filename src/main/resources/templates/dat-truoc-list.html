@@ -29,14 +29,8 @@
         <td th:text="${dt.soDienThoai}"></td>
         <td th:text="${dt.email}"></td>
         <td th:text="${dt.diaChi}"></td>
-
-        <!-- Tên tay cầm -->
         <td th:text="${dt.tayCam != null ? dt.tayCam.tenTayCam : '---'}"></td>
-
-        <!-- Giá gốc -->
         <td th:text="${dt.tayCam != null ? dt.tayCam.gia : '---'}"></td>
-
-        <!-- Giá đặt trước (có thể bằng giá gốc hoặc giá ưu đãi 10%) -->
         <td>
             <span th:if="${dt.giaDatTruoc != null}"
                   th:text="${dt.giaDatTruoc}"></span>

@@ -20,24 +20,6 @@ public class WebConfig implements WebMvcConfigurer {
     private AdminInterceptor adminInterceptor;
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-//        if (loginInterceptor != null) {
-//            registry.addInterceptor(loginInterceptor)
-//                    .addPathPatterns("/**")
-//                    .excludePathPatterns("/login","/register","/css/**","/js/**","/images/**");
-//        }
-//        if (adminInterceptor != null) {
-//            registry.addInterceptor(adminInterceptor)
-//                    .addPathPatterns("/admin/**", "/admin/taycam/**")
-//                    .excludePathPatterns(
-//                            "/login", "/logout", "/", "/css/**", "/js/**", "/img/**", "/h2-console/**",
-//                            "/cart/add/**"   // <-- thêm dòng này
-//                    );
-//
-//        }
-    }
-
-    @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         // thư mục uploads đặt cùng cấp project (folder ngoài)

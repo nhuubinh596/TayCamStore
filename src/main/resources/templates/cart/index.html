@@ -126,17 +126,12 @@
 
 <section class="container">
     <h1 class="cart-title">🧺 Giỏ hàng của bạn</h1>
-
-    <!-- Nếu giỏ hàng trống -->
     <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="empty-cart">
         Giỏ hàng hiện đang trống.<br>
         <a th:href="@{/tay-cam/home}" class="back-btn">Quay lại mua sắm</a>
     </div>
 
-    <!-- Nếu có sản phẩm -->
     <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}" class="cart-container">
-
-        <!-- LEFT: DANH SÁCH SẢN PHẨM -->
         <div class="cart-box">
             <table>
                 <thead>
@@ -198,8 +193,6 @@
             </div>
 
         </div>
-
-        <!-- RIGHT: TÓM TẮT ĐƠN HÀNG -->
         <div class="summary-box">
 
             <div class="summary-title">Tóm tắt đơn hàng</div>

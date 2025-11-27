@@ -27,7 +27,6 @@ public class LoginController {
                           @RequestParam String password,
                           HttpSession session) {
 
-        // validate rỗng (validate cơ bản)
         if(username == null || username.isBlank() ||
                 password == null || password.isBlank()){
             return "redirect:/login?error=empty";
@@ -39,7 +38,6 @@ public class LoginController {
             return "redirect:/login?error=user-not-found";
         }
 
-        // check password
         if(!password.equals(userEntity.getPassword())) {
             return "redirect:/login?error=wrong-pass";
         }

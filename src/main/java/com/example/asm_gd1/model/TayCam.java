@@ -39,16 +39,14 @@ public class TayCam {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "releaseDate")
-    private LocalDateTime releaseDate;  // ngày mở bán
+    private LocalDateTime releaseDate;
 
     @Column(name = "preorder_discount")
-    private Double preorderDiscount; // phần trăm giảm, ví dụ 10.0 = 10%
+    private Double preorderDiscount;
 
-    // 1 tay cầm có thể có nhiều đánh giá
     @OneToMany(mappedBy = "tayCam", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DanhGia> danhGias = new ArrayList<>();
 
-    // 1 tay cầm có thể có nhiều đơn đặt trước
     @OneToMany(mappedBy = "tayCam", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DatTruoc> datTruocs = new ArrayList<>();
 }

@@ -18,10 +18,8 @@ public class CheckoutForm {
     @NotBlank(message = "Địa chỉ nhận hàng không được để trống")
     private String diaChiNhan;
 
-    // không bắt buộc
     private String ghiChu;
 
-    // getters/setters
     public String getTenNhan() { return tenNhan; }
     public void setTenNhan(String tenNhan) { this.tenNhan = tenNhan; }
     public String getSdtNhan() { return sdtNhan; }

@@ -48,7 +48,7 @@ public class RegisterController {
 
         User u = new User();
         u.setUsername(form.getUsername());
-        u.setPassword(passwordEncoder.encode(form.getPassword()));  // encode = {bcrypt}
+        u.setPassword(passwordEncoder.encode(form.getPassword()));
         u.setRole("USER");
         u.setHoTen(form.getHoTen());
         u.setDiaChi(form.getDiaChi());

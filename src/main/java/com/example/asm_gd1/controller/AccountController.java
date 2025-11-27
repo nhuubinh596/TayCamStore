@@ -18,11 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AccountController {
 
     @Autowired private UserRepository userRepo;
-
-    // THÊM: encoder để verify mật khẩu hiện tại & encode mật khẩu mới
     @Autowired private PasswordEncoder passwordEncoder;
 
-    // --- Các method cũ của bạn giữ nguyên ---
     @GetMapping
     public String accountHome(HttpSession session, Model model){
         User u = (User) session.getAttribute("user");
@@ -36,10 +33,9 @@ public class AccountController {
         // Lấy user từ session hoặc security principal
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/login"; // nếu chưa login
+            return "redirect:/login";
         }
 
-        // map User -> UserProfileForm (tạo form object nếu cần)
         UserProfileForm form = new UserProfileForm();
         form.setUsername(user.getUsername());
         form.setHoTen(user.getHoTen());
@@ -48,7 +44,6 @@ public class AccountController {
         form.setDiaChi(user.getDiaChi());
 
         model.addAttribute("form", form);
-        // tạo securityForm rỗng cho form đổi mật khẩu (nếu dùng)
         model.addAttribute("securityForm", new SecurityForm());
         return "account/profile";
     }
@@ -59,27 +54,23 @@ public class AccountController {
                               HttpSession session,
                               RedirectAttributes ra) {
         if (br.hasErrors()) {
-            // trả lại view — form lỗi sẽ hiển thị trong page
             return "account/profile";
         }
 
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
 
-        // cập nhật thông tin và lưu
         user.setHoTen(form.getHoTen());
         user.setEmail(form.getEmail());
         user.setSoDienThoai(form.getSoDienThoai());
         user.setDiaChi(form.getDiaChi());
         userRepo.save(user);
 
-        // cập nhật session
         session.setAttribute("user", user);
         ra.addFlashAttribute("msgSuccess", "Cập nhật thông tin thành công");
         return "redirect:/account/profile";
     }
 
-    // --- THÊM: đổi username & password ---
     @PostMapping("/profile/security")
     public String updateSecurity(@RequestParam String currentPassword,
                                  @RequestParam(required = false) String newUsername,
@@ -90,20 +81,17 @@ public class AccountController {
         User u = (User) session.getAttribute("user");
         if (u == null) return "redirect:/login";
 
-        // Lấy user mới nhất từ DB để đảm bảo đồng bộ
         User db = userRepo.findById(u.getId()).orElse(null);
         if (db == null) {
             ra.addFlashAttribute("error", "Không tìm thấy tài khoản.");
             return "redirect:/account/profile";
         }
 
-        // Bắt buộc nhập mật khẩu hiện tại để xác thực
         if (!passwordEncoder.matches(currentPassword, db.getPassword())) {
             ra.addFlashAttribute("error", "Mật khẩu hiện tại không đúng.");
             return "redirect:/account/profile";
         }
 
-        // Đổi username (nếu có nhập)
         if (newUsername != null && !newUsername.isBlank() && !newUsername.equals(db.getUsername())) {
             if (userRepo.existsByUsername(newUsername.trim())) {
                 ra.addFlashAttribute("error", "Tên đăng nhập đã tồn tại.");
@@ -112,7 +100,6 @@ public class AccountController {
             db.setUsername(newUsername.trim());
         }
 
-        // Đổi password (nếu có nhập)
         if (newPassword != null && !newPassword.isBlank()) {
             if (newPassword.length() < 6) {
                 ra.addFlashAttribute("error", "Mật khẩu mới tối thiểu 6 ký tự.");
@@ -126,7 +113,7 @@ public class AccountController {
         }
 
         userRepo.save(db);
-        session.setAttribute("user", db); // cập nhật lại session để header “Xin chào …” phản ánh ngay
+        session.setAttribute("user", db);
         ra.addFlashAttribute("success", "Đã cập nhật thông tin bảo mật.");
         return "redirect:/account/profile";
     }

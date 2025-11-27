@@ -20,7 +20,6 @@
         <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}">
             <div class="card p-3 mb-3">
                 <h5>Danh sách sản phẩm</h5>
-                <!-- ngay dưới "Danh sách sản phẩm" -->
                 <pre style="color:#fff; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px;"
                      th:text="${cartItems}">[items debug]</pre>
 
@@ -50,8 +49,6 @@
                     <div class="h5 text-info">Tổng: <strong th:text="${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</strong></div>
                 </div>
             </div>
-
-            <!-- FORM KHÁCH CHƯA ĐĂNG NHẬP -->
             <form th:action="@{/cart/place}" method="post" class="card p-3 mb-3" autocomplete="off">
                 <input type="hidden" th:if="${_csrf!=null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -80,8 +77,6 @@
                     <a class="btn btn-outline-light" th:href="@{/cart}">Quay lại giỏ hàng</a>
                 </div>
             </form>
-
-            <!-- FORM NGƯỜI ĐÃ ĐĂNG NHẬP -->
             <div th:if="${user != null}" class="card p-3">
                 <form th:action="@{/cart/confirm}" method="post" style="margin:0;">
                     <input type="hidden" th:if="${_csrf!=null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

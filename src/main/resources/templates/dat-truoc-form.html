@@ -9,7 +9,6 @@
 
 <h2>📌 Đặt trước tay cầm</h2>
 
-<!-- Form chọn tay cầm -->
 <form method="get" action="/dat-truoc/form" class="mb-3">
     <label class="form-label">Chọn tay cầm:</label>
     <select name="maTayCam" class="form-select" onchange="this.form.submit()">
@@ -22,7 +21,6 @@
     </select>
 </form>
 
-<!-- Hiển thị thông tin tay cầm được chọn -->
 <div th:if="${chonTayCam != null}">
     <div class="card mb-4" style="max-width: 600px;">
         <div class="row g-0">
@@ -37,7 +35,6 @@
                         <span th:text="${#numbers.formatDecimal(chonTayCam.gia, 0, 'POINT', 0, 'COMMA')}"></span> VND
                     </p>
 
-                    <!-- Nếu còn thời gian mở bán -->
                     <div th:if="${chonTayCam.releaseDate != null and chonTayCam.releaseDate.isAfter(T(java.time.LocalDateTime).now())}">
                         <p class="text-success">
                             <strong>Ưu đãi đặt trước:</strong>
@@ -53,7 +50,6 @@
                         </p>
                     </div>
 
-                    <!-- Nếu đã mở bán -->
                     <div th:if="${chonTayCam.releaseDate == null or !chonTayCam.releaseDate.isAfter(T(java.time.LocalDateTime).now())}">
                         <p class="text-danger">
                             <strong>Thông báo:</strong> Đã mở bán, hết ưu đãi.
@@ -64,10 +60,7 @@
         </div>
     </div>
 
-    <!-- Form điền thông tin đặt trước -->
     <form th:action="@{/dat-truoc/add}" th:object="${datTruoc}" method="post">
-
-        <!-- GỬI maTayCam như request param đơn giản (chắc chắn được gửi) -->
         <input type="hidden" name="maTayCam" th:value="${chonTayCam.maTayCam}" />
 
         <div class="mb-3">
@@ -90,8 +83,6 @@
         <button type="submit" class="btn btn-success" th:disabled="${chonTayCam == null}">Đặt trước</button>
         <a href="/tay-cam/home" class="btn btn-secondary">Quay lại</a>
     </form>
-
-<!-- Nếu chưa chọn tay cầm thì disable form -->
 <div th:if="${chonTayCam == null}" class="alert alert-warning mt-3">
     Vui lòng chọn một tay cầm để tiếp tục đặt trước.
 </div>

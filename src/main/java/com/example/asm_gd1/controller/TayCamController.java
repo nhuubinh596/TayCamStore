@@ -40,7 +40,6 @@ public class TayCamController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             HttpSession session) {
 
-        // pageSize 100 để load toàn bộ sản phẩm 1 lần (UI quản lý client-side)
         Pageable pageable = PageRequest.of(Math.max(0, page), 100);
 
         Page<TayCam> data = (name == null || name.isBlank())
@@ -49,17 +48,13 @@ public class TayCamController {
 
         List<TayCam> list = data.getContent();
 
-        // tính rating
         Map<Integer, Double> avgRatings = tinhTrungBinhDanhGia(list);
 
         model.addAttribute("listTayCam", list);
         model.addAttribute("avgRatings", avgRatings);
-
-        // đồng bộ với CartController (cartItems)
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("cart", session.getAttribute("cartItems"));
 
-        // debug nếu cần
         System.out.println("DEBUG user: " + session.getAttribute("user"));
         System.out.println("DEBUG cartItems: " + session.getAttribute("cartItems"));
 
@@ -81,7 +76,6 @@ public class TayCamController {
         return "tay-cam-list";
     }
 
-    // ======= THÊM TAY CẦM (admin) =======
     @PostMapping("/add")
     public String themTayCam(@ModelAttribute TayCam tayCam,
                              @RequestParam("imageFile") MultipartFile imageFile) {
@@ -102,7 +96,6 @@ public class TayCamController {
         return "redirect:/tay-cam/home";
     }
 
-    // CHI TIẾT
     @GetMapping("/chi-tiet/{id}")
     public String xemChiTietTayCam(@PathVariable("id") Integer id,
                                    @RequestParam(defaultValue = "0") int page,
@@ -149,15 +142,12 @@ public class TayCamController {
         model.addAttribute("preorderDiscountPct", discountPct);
         model.addAttribute("truocMoBan", truocMoBan);
         model.addAttribute("releaseText", releaseText);
-
-        // ensure top cart count in detail page too
         model.addAttribute("cart", session.getAttribute("cartItems"));
         model.addAttribute("user", session.getAttribute("user"));
 
         return "tay-cam-details";
     }
 
-    // UPDATE (admin)
     @GetMapping("/edit/{maTayCam}")
     public String hienThiFormEdit(@PathVariable("maTayCam") Integer maTayCam, Model model) {
         TayCam tayCam = tcrp.findById(maTayCam).orElse(null);
@@ -238,7 +228,6 @@ public class TayCamController {
 
         List<TayCam> all = tcrp.findAll();
 
-        // filter theo keyword/price
         Stream<TayCam> s = all.stream();
         if (keyword != null && !keyword.isBlank()) {
             String k = keyword.toLowerCase();
@@ -247,7 +236,6 @@ public class TayCamController {
         if (minPrice != null) s = s.filter(tc -> tc.getGia() != null && tc.getGia() >= minPrice);
         if (maxPrice != null) s = s.filter(tc -> tc.getGia() != null && tc.getGia() <= maxPrice);
 
-        // collect distinct by id
         List<TayCam> filtered = s.collect(Collectors.collectingAndThen(
                 Collectors.toMap(TayCam::getMaTayCam, Function.identity(), (a, b)->a),
                 m -> new ArrayList<>(m.values())
@@ -288,7 +276,6 @@ public class TayCamController {
         return "tay-cam-list";
     }
 
-    // HỖ TRỢ
     private Map<Integer, Double> tinhTrungBinhDanhGia(List<TayCam> tayCams) {
         Map<Integer, Double> avgRatings = new HashMap<>();
         for (TayCam tc : tayCams) {

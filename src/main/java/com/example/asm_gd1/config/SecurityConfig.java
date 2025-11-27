@@ -30,7 +30,6 @@ public class SecurityConfig {
         this.userRepo = userRepo;
     }
 
-    // 1) PasswordEncoder: hỗ trợ {bcrypt}, {noop}, ...
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -50,7 +49,6 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
-    // 4) Sau đăng nhập: set session.user + điều hướng theo role
     @Bean
     public AuthenticationSuccessHandler loginSuccessHandler() {
         return (request, response, authentication) -> {
@@ -64,7 +62,6 @@ public class SecurityConfig {
         };
     }
 
-    // 5) Chuỗi filter + phân quyền + login/logout
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            AuthenticationSuccessHandler successHandler) throws Exception {
@@ -80,9 +77,9 @@ public class SecurityConfig {
                 )
 
                 .formLogin(form -> form
-                        .loginPage("/login")            // GET hiển thị form
-                        .loginProcessingUrl("/login")   // POST xử lý
-                        .successHandler(successHandler) // điều hướng theo role + set session.user
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler(successHandler)
                         .failureUrl("/login?error")
                         .permitAll()
                 )

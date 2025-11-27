@@ -26,7 +26,6 @@ public class UserProfileForm {
 
     private String username;
 
-    // nếu bạn định cho đổi pass thì thêm luôn
     private String password;
 
 }

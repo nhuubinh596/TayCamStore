@@ -5,7 +5,6 @@
     <title th:text="${tc != null ? tc.tenTayCam : 'Chi tiết'}">Chi tiết</title>
     <link rel="stylesheet" th:href="@{/css/theme-dark.css}" />
     <style>
-        /* local tweaks cho trang detail */
         .detail-wrap{ max-width:1100px; margin:28px auto; padding:20px; }
         .detail-grid{ display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; }
         .detail-image{ flex:0 0 420px; max-width:100%; border-radius:12px; overflow:hidden; background:#071028; box-shadow:0 8px 28px rgba(2,6,18,0.45); }
@@ -28,25 +27,19 @@
             .detail-grid{ flex-direction:column; }
             .detail-image{ height:260px; }
         }
-        /* reviews table */
         .table-responsive .table{ background:linear-gradient(180deg, rgba(17,23,56,.85), rgba(12,18,46,.7)); border-radius:10px; padding:6px; }
     </style>
 </head>
 <body>
 
 <th:block th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}"></th:block>
-
-<!-- Section -->
 <section th:fragment="section">
     <div class="detail-wrap card p-3">
         <div class="detail-grid">
-            <!-- Image -->
             <div class="detail-image">
                 <img th:src="${tc != null && tc.hinhAnh != null ? tc.hinhAnh : '/images/placeholder.png'}"
                      th:alt="${tc != null ? tc.tenTayCam : 'Hình sản phẩm'}" />
             </div>
-
-            <!-- Meta -->
             <div class="detail-meta">
                 <h1 class="product-title" th:text="${tc != null ? tc.tenTayCam : 'Sản phẩm'}">Tên tay cầm</h1>
                 <div class="product-brand">Hãng: <strong th:text="${tc != null && tc.hangSanXuat != null ? tc.hangSanXuat : 'Chưa rõ'}">Hãng</strong></div>
@@ -59,7 +52,6 @@
 
                 <div class="rating-row">
                     <div class="stars" th:remove="tag">
-                        <!-- Render 1..5 stars: filled when index <= round(avgRating) -->
                         <span th:each="i : ${#numbers.sequence(1,5)}"
                               th:text="${i <= (avgRating != null ? T(java.lang.Math).round(avgRating) : 0) ? '★' : '☆'}"
                               th:classappend="${i <= (avgRating != null ? T(java.lang.Math).round(avgRating) : 0) ? '' : ' empty'}">★</span>

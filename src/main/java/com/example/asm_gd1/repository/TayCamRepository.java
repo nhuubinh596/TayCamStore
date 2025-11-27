@@ -15,10 +15,8 @@ public interface TayCamRepository extends JpaRepository<TayCam, Integer> {
 
     Page<TayCam> findByTenTayCamContainingIgnoreCase(String name, Pageable pageable);
 
-    // paging version — đảm bảo controller có thể gọi findByGiaBetween(min,max,pageable)
     Page<TayCam> findByGiaBetween(Double minGia, Double maxGia, Pageable pageable);
 
-    // nếu bạn vẫn muốn giữ versi trả List (option)
     List<TayCam> findByGiaBetween(Double minGia, Double maxGia);
 
     @Query("""

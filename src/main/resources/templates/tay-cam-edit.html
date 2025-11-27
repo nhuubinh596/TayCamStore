@@ -44,23 +44,17 @@
                     </thead>
                     <tbody>
                     <tr th:each="tc, st : ${ds}">
-                        <!-- STT -->
                         <td th:text="${currentPage * pageSize + st.index + 1}">1</td>
 
                         <td>
-                            <!-- ẢNH PLACEHOLDER khi rỗng -->
                             <img class="thumb"
                                  th:if="${#strings.isEmpty(tc.hinhAnh)}"
                                  th:src="@{/images/placeholder.png}"
                                  alt="Ảnh tay cầm">
-
-                            <!-- ẢNH ABSOLUTE URL -->
                             <img class="thumb"
                                  th:if="${!#strings.isEmpty(tc.hinhAnh) and #strings.startsWith(tc.hinhAnh,'http')}"
                                  th:src="${tc.hinhAnh}"
                                  alt="Ảnh tay cầm">
-
-                            <!-- ẢNH TRONG /static/images -->
                             <img class="thumb"
                                  th:if="${!#strings.isEmpty(tc.hinhAnh) and !#strings.startsWith(tc.hinhAnh,'http')}"
                                  th:src="@{/images/{f}(f=${tc.hinhAnh})}"
@@ -89,8 +83,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- Phân trang: giữ q nếu có -->
         <nav class="mt-3" th:if="${totalPages>1}">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage==0}? 'disabled'">

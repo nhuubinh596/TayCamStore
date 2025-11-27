@@ -38,7 +38,6 @@ public class DanhGiaController {
         danhGia.setTayCam(tayCam);
         dgrp.save(danhGia);
 
-        // redirect về trang cuối (page index cuối cùng) để thấy đánh giá mới
         int pageSize = 5;
         long total = dgrp.countByTayCam_MaTayCam(maTayCam);
         int lastPage = (int) ((total - 1) / pageSize);
@@ -78,7 +77,6 @@ public class DanhGiaController {
         TayCam tayCam = tcrp.findById(maTayCam).orElse(null);
         if (tayCam == null) return "redirect:/tay-cam/home";
 
-        // tạo pageable có sort by id desc (tránh duplicate order by)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<DanhGia> danhGiaPage = dgrp.findByTayCam_MaTayCam(maTayCam, pageable);
 
@@ -88,7 +86,6 @@ public class DanhGiaController {
         model.addAttribute("totalPages", danhGiaPage.getTotalPages());
         model.addAttribute("totalItems", danhGiaPage.getTotalElements());
 
-        // releaseEpoch + giaUuDai giống TayCamController logic
         long releaseEpoch = 0L;
         boolean truocMoBan = false;
         if (tayCam.getReleaseDate() != null) {

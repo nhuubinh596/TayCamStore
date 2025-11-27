@@ -10,7 +10,6 @@
         <div class="section-head mb-3"><span>➕</span><strong>Thêm tay cầm</strong></div>
 
         <div class="card p-4">
-            <!-- IMPORTANT: th:object để BindingResult bám đúng -->
             <form th:action="@{/admin/tay-cam/add}" method="post"
                   enctype="multipart/form-data" th:object="${tc}" class="row g-3">
 
@@ -40,7 +39,6 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Ngày & giờ mở bán</label>
-                    <!-- dùng datetime-local để map LocalDateTime -->
                     <input class="form-control" type="datetime-local" th:field="*{releaseDate}">
                     <div class="text-danger small" th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></div>
                 </div>

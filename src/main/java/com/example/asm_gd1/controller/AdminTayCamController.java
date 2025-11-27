@@ -28,7 +28,6 @@ public class AdminTayCamController {
         return (u instanceof User) && "ADMIN".equalsIgnoreCase(((User)u).getRole());
     }
 
-    /* LIST */
     @GetMapping({"","/"})
     public String list(@RequestParam(defaultValue="0") int page,
                        @RequestParam(defaultValue="10") int size,
@@ -36,7 +35,7 @@ public class AdminTayCamController {
                        HttpSession session, Model model){
         if(!isAdmin(session)) return "redirect:/access-denied";
         Pageable pageable = PageRequest.of(Math.max(0,page), Math.max(1,size),
-                Sort.by(Sort.Direction.ASC, "maTayCam"));   // mới nhất lên đầu
+                Sort.by(Sort.Direction.ASC, "maTayCam"));
 
         Page<TayCam> p = (q!=null && !q.trim().isEmpty())
                 ? tayCamRepository.findByTenTayCamContainingIgnoreCase(q.trim(), pageable)
@@ -52,7 +51,6 @@ public class AdminTayCamController {
         return "admin/taycam-list";
     }
 
-    /* ADD FORM */
     @GetMapping("/add")
     public String addForm(HttpSession session, Model model){
         if(!isAdmin(session)) return "redirect:/access-denied";
@@ -88,7 +86,6 @@ public class AdminTayCamController {
         if (existed == null) return "redirect:/admin/tay-cam";
 
         if (br.hasErrors()) {
-            // Trả lại form edit
             model.addAttribute("tc", form);
             return "admin/taycam-edit";
         }
@@ -106,8 +103,6 @@ public class AdminTayCamController {
         return "redirect:/admin/tay-cam";
     }
 
-
-    /* EDIT FORM — KHÓA id là số */
     @GetMapping("/edit/{id:\\d+}")
     public String editForm(@PathVariable Integer id, HttpSession session, Model model){
         if(!isAdmin(session)) return "redirect:/access-denied";
@@ -117,7 +112,6 @@ public class AdminTayCamController {
         return "admin/taycam-edit";
     }
 
-    /* DELETE — KHÓA id là số */
     @GetMapping("/delete/{id:\\d+}")
     public String delete(@PathVariable Integer id, HttpSession session){
         if(!isAdmin(session)) return "redirect:/access-denied";
@@ -132,14 +126,12 @@ public class AdminTayCamController {
             String filename = StringUtils.cleanPath(file.getOriginalFilename());
             if(filename.isBlank()) return null;
 
-            // Lưu ra thư mục ngoài: uploads/images
             Path base = Paths.get("uploads").resolve("images");
             Files.createDirectories(base);
             Path dest = base.resolve(filename).normalize();
 
             Files.copy(file.getInputStream(), dest, StandardCopyOption.REPLACE_EXISTING);
 
-            // Trả về đường dẫn *dùng trực tiếp trong view*: /uploads/images/{filename}
             return "/uploads/images/" + filename;
         }catch(IOException e){
             e.printStackTrace();

@@ -27,7 +27,6 @@ public class AdminController {
         return (u instanceof User) && "ADMIN".equalsIgnoreCase(((User) u).getRole());
     }
 
-    /* ===== HOME ===== */
     @GetMapping({"", "/", "/home"})
     public String adminHome(HttpSession session, Model model) {
         if (!isAdmin(session)) return "redirect:/access-denied";
@@ -36,7 +35,6 @@ public class AdminController {
         return "admin/home";
     }
 
-    /* ===== USERS LIST ===== */
     @GetMapping("/users")
     public String users(@RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size,
@@ -46,11 +44,10 @@ public class AdminController {
         Page<User> p = userRepository.findAll(
                 PageRequest.of(Math.max(page,0), Math.max(size,1), Sort.by("id").ascending())
         );
-        model.addAttribute("usersPage", p);  // <-- View admin/users.html sẽ đọc biến này
-        return "admin/users";                // <-- Trả về đúng view Users
+        model.addAttribute("usersPage", p);
+        return "admin/users";
     }
 
-    /* ===== USER DETAIL ===== */
     @GetMapping("/users/{id}")
     public String userDetail(@PathVariable Integer id, HttpSession session, Model model) {
         if (!isAdmin(session)) return "redirect:/access-denied";
@@ -58,13 +55,12 @@ public class AdminController {
         var user = userRepository.findById(id).orElse(null);
         if (user == null) return "redirect:/admin/users";
 
-        // Nếu DatTruoc CHƯA có quan hệ User, tạm lọc theo email:
         var orders = datTruocRepository.findAll().stream()
                 .filter(o -> o.getEmail() != null && o.getEmail().equalsIgnoreCase(user.getEmail()))
                 .toList();
 
         model.addAttribute("u", user);
-        model.addAttribute("orders", orders); // đơn của user này
+        model.addAttribute("orders", orders);
         return "admin/user-detail";
     }
 
@@ -77,7 +73,7 @@ public class AdminController {
 
         Page<DatTruoc> p = datTruocRepository.findAll(
                 PageRequest.of(Math.max(page,0), Math.max(size,1),
-                        org.springframework.data.domain.Sort.by("id").ascending()) // ↑ ASC
+                        org.springframework.data.domain.Sort.by("id").ascending())
         );
 
         model.addAttribute("ordersPage", p);

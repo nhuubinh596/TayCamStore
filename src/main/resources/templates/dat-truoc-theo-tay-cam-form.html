@@ -9,8 +9,6 @@
 <h2>📌 Đặt trước tay cầm</h2>
 
 <form th:action="@{/dat-truoc/add}" th:object="${datTruoc}" method="post">
-
-    <!-- Gửi maTayCam trực tiếp -->
     <input type="hidden" name="maTayCam" th:value="${fixTayCam.maTayCam}" />
 
     <div class="mb-3">

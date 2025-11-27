@@ -41,7 +41,6 @@ public class CartModelInterceptor implements HandlerInterceptor {
                 try {
                     mThanhTien = o.getClass().getMethod("getThanhTien");
                 } catch (NoSuchMethodException ex) {
-                    // ignore
                 }
                 if (mThanhTien != null) {
                     Object t = mThanhTien.invoke(o);

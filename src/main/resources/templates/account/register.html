@@ -2,8 +2,6 @@
           th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}">
 
     <title>Đăng ký</title>
-
-    <!-- Optional: css riêng cho trang (nếu muốn) -->
     <th:block th:fragment="extrahead">
         <style>
             .auth-card{max-width:720px;margin:auto}
@@ -14,14 +12,11 @@
         <div class="auth-card card">
             <h3 class="mb-1 text-center">Tạo tài khoản</h3>
             <p class="text-center mb-3">Tham gia GamingController Store để đặt trước nhanh hơn!</p>
-
-            <!-- Thông báo chung -->
             <div th:if="${error}" class="alert alert-danger mb-3" th:text="${error}"></div>
             <div th:if="${param.fromCart}" class="alert alert-info mb-3">
                 Hãy đăng ký/đăng nhập để tiếp tục đặt trước.
             </div>
 
-            <!-- FORM -->
             <form th:action="@{/register}" th:object="${form}" method="post" class="row g-3" autocomplete="off">
 
                 <div class="col-md-6">
@@ -63,7 +58,6 @@
                 <div class="col-md-6">
                     <label class="form-label">Confirm</label>
                     <input class="form-control" type="password" th:field="*{confirm}" minlength="6" required>
-                    <!-- SỬA Ở ĐÂY: hiển thị lỗi cho confirm -->
                     <div class="text-danger small" th:if="${#fields.hasErrors('confirm')}" th:errors="*{confirm}"></div>
                 </div>
 

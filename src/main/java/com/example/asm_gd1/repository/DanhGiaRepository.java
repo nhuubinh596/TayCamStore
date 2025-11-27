@@ -11,18 +11,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DanhGiaRepository extends JpaRepository<DanhGia, Integer> {
-
-    // Lấy danh sách đánh giá theo mã tay cầm (mới nhất trước)
     Page<DanhGia> findByTayCam_MaTayCam(Integer maTayCam, Pageable pageable);
 
-    // Đếm tổng số đánh giá của một tay cầm
     long countByTayCam_MaTayCam(Integer maTayCam);
 
-    // Trung bình số sao
     @Query("SELECT AVG(d.soSaoDanhGia) FROM DanhGia d WHERE d.tayCam.maTayCam = :id")
     Double findAverageRatingByTayCamId(@Param("id") Integer id);
 
-    // Các truy vấn mở rộng (nếu bạn dùng để lọc tay cầm theo sao trung bình)
     @Query("SELECT tc FROM TayCam tc WHERE " +
             "(SELECT COALESCE(AVG(d.soSaoDanhGia),0) FROM DanhGia d WHERE d.tayCam.maTayCam = tc.maTayCam) >= :minRating")
     Page<TayCam> findByAverageRatingGreaterThanEqual(@Param("minRating") Double minRating, Pageable pageable);

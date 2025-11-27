@@ -18,7 +18,6 @@
     --ps-shadow:rgba(5,10,35,.55);
 }
 
-/* ===== Global ===== */
 *{box-sizing:border-box}
 html,body{min-height:100%}
 html,body{
@@ -34,7 +33,6 @@ html,body{
     -moz-osx-font-smoothing:grayscale;
 }
 
-/* light star dust */
 body::before{
     content:"";
     position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -51,7 +49,6 @@ a{color:#79b3ff;text-decoration:none}
 a:hover{color:#a9cdff}
 .text-muted{color:var(--ps-text-3)!important}
 
-/* ===== Header ===== */
 .bg-dark-glass{
     background:linear-gradient(180deg, rgba(12,18,46,.85), rgba(12,18,46,.65));
     backdrop-filter:blur(8px);
@@ -64,7 +61,6 @@ a:hover{color:#a9cdff}
 }
 .navbar-brand:hover{color:#fff!important}
 
-/* account dropdown */
 .account{ position:relative; display:inline-block; }
 .account .account-menu{
     position:absolute; right:0; top:110%;
@@ -74,7 +70,6 @@ a:hover{color:#a9cdff}
 }
 .account.open .account-menu{ display:block; }
 
-/* ===== Footer ===== */
 .app-footer{
     color:var(--ps-text-3);
     border-top:1px solid rgba(100,140,255,.14);
@@ -83,7 +78,6 @@ a:hover{color:#a9cdff}
     margin-top:40px;
 }
 
-/* ===== Cards ===== */
 .card{
     background:linear-gradient(180deg, rgba(17,23,56,.85), rgba(12,18,46,.7));
     border:1px solid var(--ps-border);
@@ -92,7 +86,6 @@ a:hover{color:#a9cdff}
 }
 .card.p-0{padding:0}
 
-/* ===== Auth (Login/Register) ===== */
 .auth-page{min-height:calc(100vh - 160px);display:flex;align-items:center;justify-content:center}
 .auth-card{
     position:relative; z-index:1;
@@ -105,7 +98,6 @@ a:hover{color:#a9cdff}
 .auth-card h3{color:#ffffff;font-weight:800;letter-spacing:.3px;margin-bottom:.25rem}
 .auth-card p{color:#c7d4ff;margin-bottom:1.25rem}
 
-/* ===== Forms ===== */
 .form-label{color:#d7e3ff!important;font-weight:600;margin-bottom:.35rem}
 .form-control{
     color:#fff;background:var(--ps-bg-2);
@@ -118,14 +110,12 @@ a:hover{color:#a9cdff}
     box-shadow:0 0 0 .2rem rgba(94,162,255,.25);
 }
 
-/* Chrome autofill fix */
 input:-webkit-autofill{
     -webkit-text-fill-color:#fff !important;
     -webkit-box-shadow:0 0 0 1000px #101a41 inset !important;
     caret-color:#fff;
 }
 
-/* ===== Buttons ===== */
 .btn{border-radius:10px;font-weight:600;padding:8px 12px; cursor:pointer}
 .btn-brand{
     background:linear-gradient(180deg, var(--ps-accent-2), #23a6ff);
@@ -141,10 +131,8 @@ input:-webkit-autofill{
 .btn-danger{background:#e24b64;border-color:#e24b64}
 .btn-danger:hover{background:#cc3f56;border-color:#cc3f56}
 
-/* Small button */
 .btn-sm{padding:.3rem .55rem;font-size:.85rem;border-radius:8px}
 
-/* ===== Tables ===== */
 .table{color:#e8eeff;margin:0}
 .table thead th{
     color:#eaf0ff;background:rgba(20,29,70,.8);
@@ -154,13 +142,11 @@ input:-webkit-autofill{
 .table tr:hover td{background:rgba(22,32,84,.45)}
 .table .price{white-space:nowrap}
 
-/* ===== Images / Thumbs ===== */
 .thumb{
     width:56px;height:56px;border-radius:12px;object-fit:cover;background:#111;
     box-shadow:0 4px 14px rgba(0,0,0,.35);
 }
 
-/* ===== Section heading ===== */
 .section-head{
     display:flex;align-items:center;gap:10px;
     font-size:1.1rem;color:#dfe9ff;margin-bottom:.5rem;
@@ -169,7 +155,6 @@ input:-webkit-autofill{
     font-size:1.25rem;letter-spacing:.2px
 }
 
-/* ===== Pagination ===== */
 .pagination .page-link{
     color:#dfe9ff;background:rgba(19,27,60,.85);
     border:1px solid rgba(120,150,255,.25)
@@ -181,14 +166,12 @@ input:-webkit-autofill{
     color:#8aa1e0;background:rgba(19,27,60,.55)
 }
 
-/* ===== Alerts ===== */
 .alert{
     border-radius:12px;border:1px solid rgba(255,255,255,.15);
     background:rgba(30,40,85,.8);color:#ffebf0; padding:10px;
 }
 .alert-danger{border-color:rgba(255,115,140,.45);background:rgba(210,40,70,.25)}
 
-/* ===== Utilities ===== */
 .text-center{text-align:center!important}
 .text-end{text-align:end!important}
 .small{font-size:.875rem}
@@ -225,14 +208,12 @@ input:-webkit-autofill{
 .table tbody tr:hover td{background:rgba(26,38,92,.55)!important}
 .table thead th{position:sticky; top:0; z-index:1}
 
-/* ADMIN home stats numbers */
 .stat-number{
     font-size:2rem;
     font-weight:700;
     color:var(--ps-accent-2);
 }
 
-/* login page bottom link brighter */
 .auth-card .small a{
     color:var(--ps-accent-2)!important;
 }
@@ -240,7 +221,6 @@ input:-webkit-autofill{
     color:var(--ps-text-2)!important;
 }
 
-/* table hover text brightness */
 .table tbody tr:hover td{
     background:rgba(22,32,84,.65)!important;
     color:var(--ps-text-2)!important;
@@ -249,7 +229,6 @@ input:-webkit-autofill{
     color:var(--ps-accent-2)!important;
 }
 
-/* custom profile & form tweaks (from your CSS) */
 .profile-page {
     max-width: 1200px;
     margin: 28px auto 60px;
@@ -277,19 +256,16 @@ input:-webkit-autofill{
 .form-control::placeholder { color: rgba(220,230,255,0.55); }
 .form-control:focus { border-color: rgba(80,150,255,0.95); box-shadow: 0 8px 20px rgba(33,100,255,0.06); background: rgba(8,14,30,0.56); outline: none; }
 
-/* Flash message */
 .alert-box { margin-bottom: 18px; padding: 10px 14px; border-radius: 10px; font-weight:700; text-align:center; }
 .alert-success { background: rgba(10,50,20,0.6); color: #c8ffda; border:1px solid rgba(60,190,110,0.12); }
 .alert-error { background: rgba(60,10,10,0.6); color: #ffd6d6; border:1px solid rgba(255,80,80,0.12); }
 
-/* RESPONSIVE */
 @media (max-width: 780px){
     .col-md-6 { flex-basis:100%; max-width:100%; }
     .section-title { font-size: 26px; }
     .form-control { height:44px; }
 }
 
-/* ========== Product grid / cards ========== */
 .products-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:18px; }
 @media (max-width:1100px){ .products-grid{ grid-template-columns:repeat(3,1fr);} }
 @media (max-width:760px){ .products-grid{ grid-template-columns:repeat(2,1fr);} }
@@ -311,30 +287,19 @@ input:-webkit-autofill{
 .btn-ghost{ border:1px solid rgba(255,255,255,0.04); background:transparent; padding:8px 12px; border-radius:10px; color:var(--ps-text-2) }
 .btn-add{ padding:8px 12px; border-radius:10px; background:linear-gradient(180deg,#5fb0ff,#3f8df6); color:#fff; border:none }
 
-/* advanced search box */
 .adv-box{ margin-top:12px; padding:14px; border-radius:10px; border:1px dashed rgba(255,255,255,0.03); background:linear-gradient(180deg, rgba(8,14,30,0.2), rgba(8,14,30,0.1)); }
 
-/* hide native pagination by default — we prefer infinite/all products */
 .pagination-wrapper { display:none; }
 
-/* small rating */
 .rating { color:var(--ps-accent-2); font-weight:700; font-size:0.95rem }
 
-/* small helpers */
 .btn-back{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:transparent; color:#dceeff; text-decoration:none; transition: transform .08s ease, box-shadow .08s ease; }
 .btn-back:hover{ transform: translateY(-2px); box-shadow: 0 6px 18px rgba(10,30,60,0.25); }
 
-/* make sure images do not overflow containers */
 img{ max-width:100%; height:auto; display:block; }
 
-/* final touches */
 .hidden { display:none !important; }
 
-/* tay-cam-details.css
-   Styles cho trang chi tiết tay-cam - tương thích theme-dark.css
-*/
-
-/* Container chính */
 .product-detail {
     max-width: 1100px;
     margin: 28px auto;
@@ -345,7 +310,6 @@ img{ max-width:100%; height:auto; display:block; }
     align-items: start;
 }
 
-/* Mobile: stack */
 @media (max-width: 880px) {
     .product-detail {
         grid-template-columns: 1fr;
@@ -354,7 +318,6 @@ img{ max-width:100%; height:auto; display:block; }
     }
 }
 
-/* Hộp ảnh */
 .product-image {
     background: linear-gradient(180deg, rgba(12,18,40,0.45), rgba(8,12,26,0.45));
     border-radius: 12px;
@@ -370,12 +333,10 @@ img{ max-width:100%; height:auto; display:block; }
     display:block;
 }
 
-/* Mobile smaller image */
 @media (max-width: 480px) {
     .product-image img { height: 240px; }
 }
 
-/* Thông tin sản phẩm */
 .product-info {
     color: var(--ps-text);
     display: flex;
@@ -383,7 +344,6 @@ img{ max-width:100%; height:auto; display:block; }
     gap: 14px;
 }
 
-/* Tiêu đề */
 .product-title {
     font-size: 2.2rem;
     font-weight: 800;
@@ -391,7 +351,6 @@ img{ max-width:100%; height:auto; display:block; }
     margin: 0;
 }
 
-/* meta (hãng, tồn kho) */
 .product-meta {
     display: flex;
     gap: 12px;
@@ -404,7 +363,6 @@ img{ max-width:100%; height:auto; display:block; }
     font-weight:700;
 }
 
-/* Giá */
 .price-original {
     color: var(--ps-text-3);
     text-decoration: line-through;
@@ -418,7 +376,6 @@ img{ max-width:100%; height:auto; display:block; }
     letter-spacing: 0.2px;
 }
 
-/* Rating small */
 .rating-row {
     display:flex;
     align-items:center;
@@ -427,7 +384,6 @@ img{ max-width:100%; height:auto; display:block; }
     font-weight:700;
 }
 
-/* Buttons area */
 .product-actions {
     display:flex;
     gap:12px;
@@ -455,7 +411,6 @@ img{ max-width:100%; height:auto; display:block; }
 }
 .btn-ghost:active { transform: translateY(1px); }
 
-/* Tag trạng thái (preorder / in stock / out of stock) */
 .product-badge {
     display:inline-block;
     padding:6px 10px;
@@ -467,7 +422,6 @@ img{ max-width:100%; height:auto; display:block; }
 .badge-instock { background: rgba(60,200,110,0.12); color:#9fe19a; border:1px solid rgba(60,200,110,0.06); }
 .badge-out { background: rgba(255,80,80,0.06); color:#ff9aa9; border:1px solid rgba(255,80,80,0.06); }
 
-/* Divider */
 .hr-soft {
     height:1px;
     background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
@@ -475,7 +429,6 @@ img{ max-width:100%; height:auto; display:block; }
     border-radius: 2px;
 }
 
-/* Reviews block */
 .reviews {
     margin-top: 8px;
     background: linear-gradient(180deg, rgba(17,23,56,0.65), rgba(12,18,46,0.6));
@@ -485,7 +438,6 @@ img{ max-width:100%; height:auto; display:block; }
 }
 .reviews h4 { margin: 0 0 10px 0; color:var(--ps-text-2); font-weight:800; }
 
-/* Review table */
 .reviews table {
     width: 100%;
     border-collapse: collapse;
@@ -507,21 +459,17 @@ img{ max-width:100%; height:auto; display:block; }
     color: var(--ps-text-2);
 }
 
-/* Review form inputs */
 .review-form { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
 .review-form .form-control { flex:1 1 280px; min-width:180px; }
 .review-form textarea { min-height:84px; resize:vertical; }
 
-/* Small helper text */
 .helper-note { color: var(--ps-text-3); font-size:0.95rem; }
 
-/* Accessibility focus */
 .btn-add:focus, .btn-ghost:focus, .review-form input:focus, .review-form textarea:focus {
     outline: 3px solid rgba(94,162,255,0.16);
     outline-offset: 2px;
 }
 
-/* Smooth reveal animation when page loads (subtle) */
 .product-detail, .reviews {
     opacity: 0;
     transform: translateY(8px);
@@ -532,7 +480,6 @@ img{ max-width:100%; height:auto; display:block; }
     transform: translateY(0);
 }
 
-/* Extra: sticky actions on wide screens */
 @media (min-width: 1000px) {
     .product-actions {
         position: sticky;
@@ -540,18 +487,15 @@ img{ max-width:100%; height:auto; display:block; }
     }
 }
 
-/* Small tweaks to match your theme */
 .product-info .product-title { color: var(--ps-text-2); }
 .reviews tbody tr:hover td { background: rgba(20,29,70,0.4); color: var(--ps-text-2); }
-/* ==== Tay-cam details improvements ==== */
-/* container spacing */
+
 .product-detail-section {
     max-width: 1100px;
     margin: 18px auto 48px;
     padding: 12px;
 }
 
-/* two-column layout */
 .product-detail-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -562,7 +506,6 @@ img{ max-width:100%; height:auto; display:block; }
     .product-detail-row { grid-template-columns: 1fr; }
 }
 
-/* image card */
 .card-image {
     border-radius: 14px;
     overflow: hidden;
@@ -581,7 +524,6 @@ img{ max-width:100%; height:auto; display:block; }
     display:block;
 }
 
-/* title + meta */
 .product-title {
     font-size: 2rem;
     font-weight: 800;
@@ -594,7 +536,6 @@ img{ max-width:100%; height:auto; display:block; }
     font-weight:600;
 }
 
-/* price block */
 .price-original {
     color: var(--ps-text-3);
     font-size: 0.95rem;
@@ -610,7 +551,6 @@ img{ max-width:100%; height:auto; display:block; }
     letter-spacing: .2px;
 }
 
-/* rating */
 .rating-badge {
     display:inline-flex;
     align-items:center;
@@ -623,7 +563,6 @@ img{ max-width:100%; height:auto; display:block; }
     font-weight:700;
 }
 
-/* action buttons */
 .product-actions {
     display:flex;
     gap:12px;
@@ -642,7 +581,6 @@ img{ max-width:100%; height:auto; display:block; }
 }
 .btn-buy:hover { transform: translateY(-2px); }
 
-/* small back link style */
 .btn-back {
     display:inline-flex;
     align-items:center;
@@ -655,7 +593,6 @@ img{ max-width:100%; height:auto; display:block; }
     text-decoration:none;
 }
 
-/* preorder badge */
 .preorder-badge {
     display:inline-block;
     padding:6px 10px;
@@ -666,7 +603,6 @@ img{ max-width:100%; height:auto; display:block; }
     margin-bottom:8px;
 }
 
-/* hr separator */
 .product-hr {
     height:1px;
     background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
@@ -674,7 +610,6 @@ img{ max-width:100%; height:auto; display:block; }
     margin:28px 0;
 }
 
-/* reviews table polish */
 .table.table-sm {
     background: linear-gradient(180deg, rgba(20,29,70,0.7), rgba(10,16,40,0.6));
     border-radius:8px;
@@ -692,10 +627,8 @@ img{ max-width:100%; height:auto; display:block; }
 }
 .table.table-sm tbody tr + tr td { border-top: 1px solid rgba(255,255,255,0.03); }
 
-/* review form inputs sizing */
 .review-form .form-control { border-radius:10px; padding:10px; height:48px; }
 
-/* subtle entrance animation */
 .product-ready .card-image,
 .product-ready .product-title,
 .product-ready .product-actions,
@@ -710,10 +643,9 @@ img{ max-width:100%; height:auto; display:block; }
     opacity:1; transform: none;
 }
 
-/* small utilities */
 .text-success { color:#69d08a; font-weight:700; }
 .text-muted { color:var(--ps-text-3); }
-/* ===== tay-cam detail adjustments ===== */
+
 .card-image { background: linear-gradient(180deg, rgba(8,14,30,0.4), rgba(6,11,26,0.6)); padding:0; border-radius:10px; }
 .card-image img { display:block; width:100%; height:100%; object-fit:cover; border-radius:8px; }
 
@@ -728,13 +660,10 @@ img{ max-width:100%; height:auto; display:block; }
     .card-image { aspect-ratio: 16/9; }
 }
 
-/* === layout helper for nicer profile pages === */
 .site-main { padding-top: 28px; padding-bottom: 48px; background: linear-gradient(180deg, rgba(2,6,18,0.60), rgba(7,16,40,0.95)); }
 
-/* Center .container content visually for pages with large background */
 .container { max-width: 1100px; margin-left: auto; margin-right: auto; }
 
-/* card look for pages (profile, details) */
 .card {
     background: linear-gradient(180deg, rgba(12,22,46,0.60), rgba(7,10,25,0.45));
     border-radius: 14px;
@@ -742,31 +671,25 @@ img{ max-width:100%; height:auto; display:block; }
     box-shadow: 0 12px 30px rgba(2,6,18,0.55);
 }
 
-/* profile page specifics */
 .profile-wrapper { max-width:920px; margin: 36px auto; padding: 0 12px; }
 .profile-card { padding: 22px; border-radius: 12px; }
 .section-title { font-size: 28px; font-weight: 800; color: var(--ps-text-1); margin-bottom: 18px; text-align:center; }
 
-/* form controls (bigger padding on inputs) */
 .form-control { padding: 12px 14px; border-radius: 10px; }
 
-/* subtle horizontal rule */
 hr.my-divider { border: none; height: 1px; background: rgba(255,255,255,0.03); margin: 22px 0; }
 
-/* ensure footer not overlapping content on short pages */
 footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
 
-/* responsive tweaks */
 @media (max-width: 900px) {
     .profile-wrapper { padding: 8px; margin: 20px 8px; }
     .section-title { font-size: 22px; }
 }
 
-/* ===== profile / title tweaks ===== */
 .section-title {
     font-size: 32px;
     font-weight: 800;
-    color: #ffffff;            /* trắng rõ */
+    color: #ffffff;
     text-align: center;
     margin-top: 6px;
     margin-bottom: 18px;
@@ -774,20 +697,17 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     letter-spacing: 0.2px;
 }
 
-/* make card headings (h3) more visible */
 .card-heading {
-    color: #f4fbff;           /* sáng hơn */
+    color: #f4fbff;
     font-weight: 700;
     font-size: 20px;
 }
 
-/* form labels brighter */
 .card .form-label {
-    color: #e6f0ff;           /* sáng, but not pure white */
+    color: #e6f0ff;
     font-weight: 700;
 }
 
-/* inputs text color and placeholder contrast */
 .form-control {
     background: rgba(2,8,28,0.55);
     color: #eaf6ff;
@@ -797,7 +717,6 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     color: rgba(230,245,255,0.5);
 }
 
-/* make action buttons more prominent */
 .btn-brand {
     background: linear-gradient(90deg,#57c0ff,#6bb7ff);
     color: #071028;
@@ -811,18 +730,13 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     color: #eaf6ff;
 }
 
-/* spacing */
 .profile-wrapper { padding-top: 12px; padding-bottom: 24px; }
 
-/* responsive tuning */
 @media (max-width:900px) {
     .section-title { font-size: 22px; margin-top: 4px; }
     .card-heading { font-size: 18px; }
 }
 
-/* ====== Button system: modern gradient, hover, focus, small, ghost ====== */
-
-/* Base */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -839,7 +753,6 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     text-decoration: none;
 }
 
-/* Primary gradient button (used: .btn-brand) */
 .btn-brand {
     background: linear-gradient(90deg, #57c0ff 0%, #78d1ff 55%, #91e1ff 100%);
     color: #071028;
@@ -847,7 +760,6 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     border: 1px solid rgba(255,255,255,0.06);
 }
 
-/* Primary hover / active / focus */
 .btn-brand:hover {
     transform: translateY(-2px);
     box-shadow: 0 14px 40px rgba(17,90,160,0.22);
@@ -855,7 +767,6 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
 .btn-brand:active { transform: translateY(0); opacity: .96; box-shadow: 0 6px 20px rgba(10,50,90,0.18); }
 .btn-brand:focus { outline: 3px solid rgba(90,180,255,0.12); outline-offset: 2px; }
 
-/* Outline / secondary style */
 .btn-outline-light {
     background: transparent;
     color: #eaf6ff;
@@ -868,7 +779,6 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
 }
 .btn-outline-light:active { transform: translateY(0); opacity: .92; }
 
-/* Ghost minimal (no bg, just text) */
 .btn-ghost {
     background: transparent;
     color: #cfeeff;
@@ -878,7 +788,6 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
 }
 .btn-ghost:hover { background: rgba(255,255,255,0.02); }
 
-/* Small variant */
 .btn-small {
     padding: .4rem .7rem;
     border-radius: 10px;
@@ -886,14 +795,12 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     font-size: .95rem;
 }
 
-/* Large (full-width style used in forms) */
 .btn-lg {
     padding: .9rem 1.1rem;
     font-size: 1.02rem;
     border-radius: 14px;
 }
 
-/* Icon inside button */
 .btn .btn-icon {
     display:inline-flex;
     width:20px;
@@ -903,7 +810,6 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     font-size:1.05rem;
 }
 
-/* Disabled state */
 .btn[disabled],
 .btn.disabled {
     opacity: .55;
@@ -912,39 +818,31 @@ footer { padding: 18px 0; text-align:center; color: rgba(255,255,255,0.6); }
     box-shadow: none;
 }
 
-/* Utility: button group (two-column action row) */
 .btn-row { display:flex; gap:12px; align-items:center; }
 .btn-row .col { flex:1; }
 
-/* Make sure anchor links styled as buttons keep same appearance */
 a.btn, button.btn { text-decoration: none; color: inherit; }
 
-/* Accessibility: bigger hit area on mobile */
 @media (max-width:640px) {
     .btn { padding: .8rem 1rem; font-size: 1rem; }
     .btn-row { flex-direction: column; }
 }
 
-/* Optional neon border on hover (subtle) */
 .btn-brand:hover { box-shadow: 0 14px 40px rgba(17,90,160,0.24), 0 0 18px rgba(80,190,255,0.06); }
 
-/* Slightly different palette for destructive (danger) */
 .btn-danger {
     background: linear-gradient(90deg,#ff7a7a,#ff5b5b);
     color: #fff;
     box-shadow: 0 10px 30px rgba(255,80,80,0.16);
 }
 
-/* micro animation for focus-visible */
 :focus-visible { outline-color: rgba(90,180,255,0.18); outline-offset: 2px; }
 
-/* make action buttons in forms consistent (overrides older rules) */
 .actions .btn-brand, .actions .btn-outline-light {
     min-height: 48px;
     font-size: 1rem;
 }
 
-/* ensure contrast: text inside .btn-brand is readable */
 .btn-brand, .btn-lg.btn-brand { color: #071028; }
 
 .bg-dark-glass {

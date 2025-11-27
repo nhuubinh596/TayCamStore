@@ -16,7 +16,6 @@ public class DatTruocItem {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    // **quan trọng**: cột FK trong DB bạn đang dùng là "orderId"
     @JoinColumn(name = "orderId")
     private DatTruoc datTruoc;
 

@@ -25,13 +25,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         var u = userRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Not found"));
 
-        // Map role -> ROLE_*
-        String role = u.getRole(); // ví dụ: "USER" hoặc "ADMIN"
+        String role = u.getRole();
         var auths = List.of(new SimpleGrantedAuthority(
                 role.startsWith("ROLE_") ? role : "ROLE_" + role
         ));
-
-        // Nếu không có cột enabled thì gán true ở đây
         boolean enabled = true;
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
@@ -39,7 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(
                 u.getUsername(),
-                u.getPassword(),   // NHỚ: có prefix {noop}/{bcrypt} trong DB
+                u.getPassword(),
                 enabled,
                 accountNonExpired,
                 credentialsNonExpired,

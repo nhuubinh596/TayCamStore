@@ -83,7 +83,7 @@ public class CartController {
             CartItem it = existing.get();
             int newQty = Math.max(0, it.getSoLuong() + qty);
             it.setSoLuong(newQty);
-            it.setThanhTien(it.getThanhTien()); // thanhTien sẽ tính lại qua getter
+            it.setThanhTien(it.getThanhTien());
         } else {
             BigDecimal price = tc.getGia() != null ? BigDecimal.valueOf(tc.getGia()) : BigDecimal.ZERO;
             CartItem it = new CartItem(tc.getMaTayCam(), tc.getTenTayCam(), tc.getHinhAnh(), price, Math.max(1, qty));
@@ -172,7 +172,7 @@ public class CartController {
             order.setTenKhachHang(customerName);
 
             String phone = Optional.ofNullable(form.get("phone")).orElse("").trim();
-            if (!isValidPhone(phone)) phone = "000000000"; // guarantee valid for validation
+            if (!isValidPhone(phone)) phone = "000000000";
             order.setSoDienThoai(phone);
 
             String address = Optional.ofNullable(form.get("address")).orElse("").trim();
