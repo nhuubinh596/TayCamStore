@@ -1,0 +1,67 @@
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, false, true)}">
+    <title>Đăng nhập</title>
+
+    <th:block th:fragment="extrahead">
+        <style>
+            .auth-page{ min-height: calc(100vh - 160px); }
+            .auth-card{
+                background: linear-gradient(180deg, rgba(20,28,60,.80), rgba(10,16,34,.78));
+                border:1px solid #28407d; border-radius: 18px;
+                box-shadow: 0 14px 40px rgba(6,10,22,.55), inset 0 1px 0 rgba(255,255,255,.04);
+            }
+            .auth-title{
+                font-weight: 900; font-size: 2rem; color:#fff; text-align:center;
+                background: linear-gradient(90deg,#fff, #a6c6ff);
+                -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+                letter-spacing:.3px;
+            }
+            .auth-sub{ color:#a9b6d6; text-align:center; margin-top:-2px; }
+            .auth-submit{ height: 48px; font-size: 1rem; }
+            .auth-link a{ color:#8cc8ff; }
+            .auth-link a:hover{ color:#bfe0ff; }
+            .text-chuacotaikhoan {
+                color: #ffffff !important;
+            }
+        </style>
+    </th:block>
+
+
+    <section>
+        <div class="auth-page d-flex align-items-center justify-content-center">
+            <div class="card auth-card p-4 p-md-5" style="max-width:480px;width:100%;">
+                <h3 class="auth-title mb-2">Đăng nhập</h3>
+                <p class="auth-sub mb-4">Chào mừng trở lại GamingController Store</p>
+
+                <div th:if="${param.error}" class="alert alert-danger py-2 mb-3">
+                    <span th:if="${param.error[0]=='empty'}">Vui lòng nhập đầy đủ thông tin</span>
+                    <span th:if="${param.error[0]=='user-not-found'}">Tài khoản không tồn tại</span>
+                    <span th:if="${param.error[0]=='wrong-pass'}">Sai mật khẩu</span>
+                </div>
+
+                <form th:action="@{/login}" method="post" class="d-grid gap-3">
+                    <div>
+                        <label class="form-label">Username</label>
+                        <input class="form-control form-control-lg" name="username" placeholder="Tên đăng nhập" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Password</label>
+                        <input class="form-control form-control-lg" type="password" name="password" placeholder="Mật khẩu" required>
+                    </div>
+                    <button class="btn btn-brand btn-lg w-100 mt-2">Đăng nhập</button>
+                    <div th:if="${param.error}" style="color:#ff6b6b;margin-top:8px">
+                        Sai tài khoản hoặc mật khẩu.
+                    </div>
+                    <div th:if="${param.logout}" style="color:#6bcB77;margin-top:8px">
+                        Đã đăng xuất.
+                    </div>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <span class="text-soft text-chuacotaikhoan">Chưa có tài khoản?</span>
+                    <a th:href="@{/register}" class="ms-1">Đăng ký</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</th:block>

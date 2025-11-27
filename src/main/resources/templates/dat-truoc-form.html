@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Đặt trước tay cầm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+
+<h2>📌 Đặt trước tay cầm</h2>
+
+<!-- Form chọn tay cầm -->
+<form method="get" action="/dat-truoc/form" class="mb-3">
+    <label class="form-label">Chọn tay cầm:</label>
+    <select name="maTayCam" class="form-select" onchange="this.form.submit()">
+        <option value="">-- Chọn tay cầm --</option>
+        <option th:each="tc : ${tayCams}"
+                th:value="${tc.maTayCam}"
+                th:text="${tc.tenTayCam}"
+                th:selected="${chonTayCam != null and tc.maTayCam == chonTayCam.maTayCam}">
+        </option>
+    </select>
+</form>
+
+<!-- Hiển thị thông tin tay cầm được chọn -->
+<div th:if="${chonTayCam != null}">
+    <div class="card mb-4" style="max-width: 600px;">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img th:src="@{${chonTayCam.hinhAnh}}" class="img-thumbnail" width="150" alt="Ảnh tay cầm">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 th:text="${chonTayCam.tenTayCam}"></h5>
+                    <p><strong>Hãng:</strong> <span th:text="${chonTayCam.hangSanXuat}"></span></p>
+                    <p><strong>Giá gốc:</strong>
+                        <span th:text="${#numbers.formatDecimal(chonTayCam.gia, 0, 'POINT', 0, 'COMMA')}"></span> VND
+                    </p>
+
+                    <!-- Nếu còn thời gian mở bán -->
+                    <div th:if="${chonTayCam.releaseDate != null and chonTayCam.releaseDate.isAfter(T(java.time.LocalDateTime).now())}">
+                        <p class="text-success">
+                            <strong>Ưu đãi đặt trước:</strong>
+                            Giảm
+                            <span th:text="${chonTayCam.preorderDiscount}"></span>%
+                            còn
+                            <span th:text="${#numbers.formatDecimal(chonTayCam.gia * (1 - chonTayCam.preorderDiscount / 100), 0, 'POINT', 0, 'COMMA')}"></span>
+                            VND
+                        </p>
+                        <p>
+                            <strong>Thời gian mở bán:</strong>
+                            <span th:text="${#temporals.format(chonTayCam.releaseDate, 'dd/MM/yyyy HH:mm')}"></span>
+                        </p>
+                    </div>
+
+                    <!-- Nếu đã mở bán -->
+                    <div th:if="${chonTayCam.releaseDate == null or !chonTayCam.releaseDate.isAfter(T(java.time.LocalDateTime).now())}">
+                        <p class="text-danger">
+                            <strong>Thông báo:</strong> Đã mở bán, hết ưu đãi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form điền thông tin đặt trước -->
+    <form th:action="@{/dat-truoc/add}" th:object="${datTruoc}" method="post">
+
+        <!-- GỬI maTayCam như request param đơn giản (chắc chắn được gửi) -->
+        <input type="hidden" name="maTayCam" th:value="${chonTayCam.maTayCam}" />
+
+        <div class="mb-3">
+            <label>Họ tên khách hàng</label>
+            <input type="text" class="form-control" th:field="*{tenKhachHang}" required>
+        </div>
+        <div class="mb-3">
+            <label>Số điện thoại</label>
+            <input type="text" class="form-control" th:field="*{soDienThoai}" required>
+        </div>
+        <div class="mb-3">
+            <label>Địa chỉ</label>
+            <input type="text" class="form-control" th:field="*{diaChi}" required>
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" class="form-control" th:field="*{email}" required>
+        </div>
+
+        <button type="submit" class="btn btn-success" th:disabled="${chonTayCam == null}">Đặt trước</button>
+        <a href="/tay-cam/home" class="btn btn-secondary">Quay lại</a>
+    </form>
+
+<!-- Nếu chưa chọn tay cầm thì disable form -->
+<div th:if="${chonTayCam == null}" class="alert alert-warning mt-3">
+    Vui lòng chọn một tay cầm để tiếp tục đặt trước.
+</div>
+
+</body>
+</html>

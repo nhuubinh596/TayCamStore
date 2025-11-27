@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Giỏ hàng – GamingController Store</title>
+    <link rel="stylesheet" th:href="@{/css/theme-dark.css}">
+    <style>
+        .cart-container {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .cart-box {
+            background: rgba(6, 11, 26, 0.55);
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(2, 6, 18, .45);
+        }
+
+        .cart-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            color: var(--ps-text-2);
+        }
+
+        table thead {
+            font-weight: 700;
+            color: var(--ps-text-1);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        table td {
+            padding: 12px 8px;
+        }
+
+        .cart-thumb {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #0b1222;
+        }
+
+        .cart-btn {
+            background: #3f8df6;
+            border: none;
+            padding: 8px 14px;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .cart-btn-danger {
+            background: #ff6961;
+        }
+
+        .cart-btn:hover {
+            opacity: .85;
+        }
+
+        .summary-box {
+            background: rgba(6, 11, 26, 0.55);
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(2, 6, 18, .45);
+        }
+
+        .summary-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .summary-total {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--ps-brand);
+        }
+
+        .empty-cart {
+            text-align: center;
+            margin-top: 120px;
+            font-size: 1.4rem;
+            color: var(--ps-text-2);
+        }
+
+        .back-btn {
+            margin-top: 18px;
+            padding: 10px 20px;
+            background: #3f8df6;
+            border-radius: 10px;
+            display: inline-block;
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<header style="padding:18px 28px;">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
+        <a th:href="@{/}" style="color:white; text-decoration:none; font-size:1.2rem; font-weight:700;">
+            🎮 GamingController Store
+        </a>
+    </div>
+</header>
+
+<section class="container">
+    <h1 class="cart-title">🧺 Giỏ hàng của bạn</h1>
+
+    <!-- Nếu giỏ hàng trống -->
+    <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="empty-cart">
+        Giỏ hàng hiện đang trống.<br>
+        <a th:href="@{/tay-cam/home}" class="back-btn">Quay lại mua sắm</a>
+    </div>
+
+    <!-- Nếu có sản phẩm -->
+    <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}" class="cart-container">
+
+        <!-- LEFT: DANH SÁCH SẢN PHẨM -->
+        <div class="cart-box">
+            <table>
+                <thead>
+                <tr>
+                    <td>Hình</td>
+                    <td>Tên</td>
+                    <td>Giá</td>
+                    <td>Số lượng</td>
+                    <td>Thành tiền</td>
+                    <td>Hành động</td>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="ci : ${cartItems}">
+                    <td>
+                        <div style="width:70px; height:70px; overflow:hidden; border-radius:8px;">
+                            <img th:if="${ci.hinhAnh != null and ci.hinhAnh.startsWith('/uploads')}"
+                                 th:src="${ci.hinhAnh}" th:alt="${ci.tenTayCam}" class="cart-thumb" />
+                            <img th:if="${ci.hinhAnh != null and !ci.hinhAnh.startsWith('/uploads')}"
+                                 th:src="@{/images/{fn}(fn=${ci.hinhAnh})}" th:alt="${ci.tenTayCam}" class="cart-thumb" />
+                            <img th:if="${ci.hinhAnh == null}" th:src="@{/images/placeholder.png}" th:alt="${ci.tenTayCam}" class="cart-thumb" />
+                        </div>
+                    </td>
+
+                    <td th:text="${ci.tenTayCam}">Tên</td>
+
+                    <td th:text="${#numbers.formatInteger(ci.donGia, 0, 'POINT')} + ' ₫'">Giá</td>
+
+                    <td>
+                        <form th:action="@{/cart/update}" method="post" style="display:flex; gap:6px;">
+                            <input type="hidden" name="productId" th:value="${ci.maTayCam}">
+                            <input type="number" name="quantity" min="1" th:value="${ci.soLuong}"
+                                   style="width:60px; border-radius:6px; border:none; padding:6px;">
+                            <button class="cart-btn" type="submit">Cập nhật</button>
+                        </form>
+                    </td>
+
+                    <td th:text="${#numbers.formatInteger(ci.thanhTien, 0, 'POINT')} + ' ₫'">0 ₫</td>
+
+                    <td>
+                        <form th:action="@{/cart/delete/{id}(id=${ci.maTayCam})}" method="post">
+                            <button class="cart-btn cart-btn-danger" type="submit">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p style="margin-top:14px; color:var(--ps-text-2); font-size:.9rem;">
+                Ghi chú: Bạn có thể cập nhật số lượng hoặc xóa sản phẩm trước khi đặt hàng.
+            </p>
+            <div style="margin-top:18px;">
+                <a th:href="@{/tay-cam/home}"
+                   class="cart-btn"
+                   style="background:#4CAF50; text-decoration:none; display:inline-block; padding:10px 16px; border-radius:8px;">
+                    ⬅ Tiếp tục mua hàng
+                </a>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: TÓM TẮT ĐƠN HÀNG -->
+        <div class="summary-box">
+
+            <div class="summary-title">Tóm tắt đơn hàng</div>
+
+            <div class="summary-row">
+                <span>Tổng sản phẩm</span>
+                <span th:text="${cartTotalQty}">0</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Tạm tính</span>
+                <span th:text="${#numbers.formatInteger(cartSubTotal, 0, 'POINT')} + ' ₫'">0 ₫</span>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.08); margin:12px 0;">
+
+            <div class="summary-row">
+                <span style="font-weight:700;">Tổng</span>
+                <span class="summary-total"
+                      th:text="${#numbers.formatInteger(cartSubTotal, 0, 'POINT')} + ' ₫'">0 ₫</span>
+            </div>
+
+            <form th:action="@{/cart/checkout}" method="get" style="margin-top:18px;">
+                <button class="cart-btn" style="width:100%; padding:12px; font-size:1rem;">
+                    Đặt trước / Thanh toán
+                </button>
+            </form>
+
+            <form th:action="@{/cart/clear}" method="post" style="margin-top:15px;">
+                <button class="cart-btn cart-btn-danger" style="width:100%; padding:10px;">Xóa hết</button>
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer style="margin-top:40px; text-align:center; padding:20px; opacity:0.65;">
+    © 2025 GamingController Store
+</footer>
+
+</body>
+</html>

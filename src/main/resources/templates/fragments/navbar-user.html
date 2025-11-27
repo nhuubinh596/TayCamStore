@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="header">
+<!-- fragments/navbar-user.html -->
+<nav class="navbar navbar-dark bg-dark-glass">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand" th:href="@{/tay-cam/home}">🎮 GamingController Store</a>
+
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-light btn-sm" th:href="@{/cart/view}">🛒 Giỏ hàng</a>
+            <a class="btn btn-outline-light btn-sm" th:href="@{/account/profile}">👤 Cập nhật thông tin</a>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <input type="hidden" th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-danger btn-sm">Đăng xuất</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+</html>

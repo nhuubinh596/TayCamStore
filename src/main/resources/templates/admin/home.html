@@ -1,0 +1,38 @@
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}">
+    <title>Admin Home</title>
+
+    <th:block th:fragment="extrahead">
+        <style>
+            .stat{background:rgba(20,29,70,.4);border:1px solid var(--ps-border);border-radius:16px;padding:18px}
+            .stat h4{margin:0 0 .25rem 0}
+            .stat .num{font-size:2.25rem;font-weight:800;color:#fff}
+            .buttons .btn{min-width:160px}
+        </style>
+    </th:block>
+
+    <section>
+        <div class="section-head mb-3"><span>🛠️</span><strong>Bảng điều khiển</strong></div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <div class="stat">
+                    <h4>Tổng tay cầm</h4>
+                    <div class="num" th:text="${tongTayCam}">0</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stat">
+                    <h4>Tổng đơn đặt trước</h4>
+                    <div class="num" th:text="${tongDonDatTruoc}">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons d-flex gap-2">
+            <a class="btn btn-brand" th:href="@{/admin/tay-cam}">Quản lý Tay Cầm</a>
+            <a class="btn btn-outline-light" th:href="@{/admin/orders}">Xem Đơn đặt trước</a>
+            <a class="btn btn-danger" th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </section>
+</th:block>

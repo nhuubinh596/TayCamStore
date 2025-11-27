@@ -1,0 +1,103 @@
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}">
+
+    <title>Xác nhận đặt trước</title>
+
+    <section class="container py-3">
+        <h3>📦 Xác nhận đặt trước</h3>
+
+        <!-- Nếu giỏ trống -->
+        <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="alert alert-info">
+            Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt trước.
+            <div class="text-center mt-4">
+                <a th:href="@{/tay-cam/home}" class="btn btn-brand px-4 py-2">
+                    🛍️ Quay lại trang chủ
+                </a>
+            </div>
+        </div>
+
+        <!-- Nếu giỏ có hàng -->
+        <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}">
+            <div class="card p-3 mb-3">
+                <h5>Danh sách sản phẩm</h5>
+                <!-- ngay dưới "Danh sách sản phẩm" -->
+                <pre style="color:#fff; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px;"
+                     th:text="${cartItems}">[items debug]</pre>
+
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                        th:each="it : ${cartItems}">
+                        <div class="d-flex align-items-center" style="gap:12px;">
+                            <div style="width:90px; height:70px; overflow:hidden; border-radius:6px;">
+                                <img th:if="${it.hinhAnh != null and it.hinhAnh.startsWith('/uploads')}"
+                                     th:src="${it.hinhAnh}" th:alt="${it.tenTayCam}" style="width:100%; height:100%; object-fit:cover; display:block;" />
+                                <img th:if="${it.hinhAnh != null and !it.hinhAnh.startsWith('/uploads')}"
+                                     th:src="@{/images/{fn}(fn=${it.hinhAnh})}" th:alt="${it.tenTayCam}" style="width:100%; height:100%; object-fit:cover; display:block;" />
+                                <img th:if="${it.hinhAnh == null}" th:src="@{/images/placeholder.png}" th:alt="${it.tenTayCam}" style="width:100%; height:100%; object-fit:cover; display:block;" />
+                            </div>
+
+                            <div>
+                                <div class="fw-semibold" th:text="${it.tenTayCam}">Tên</div>
+                                <small class="text-muted"> x <span th:text="${it.soLuong}">1</span></small>
+                            </div>
+                        </div>
+                        <div th:text="${#numbers.formatDecimal(it.thanhTien,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</div>
+                    </li>
+                </ul>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="text-info">Tổng SL: <strong th:text="${totalQty}">0</strong></div>
+                    <div class="h5 text-info">Tổng: <strong th:text="${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</strong></div>
+                </div>
+            </div>
+
+            <!-- FORM KHÁCH CHƯA ĐĂNG NHẬP -->
+            <form th:action="@{/cart/place}" method="post" class="card p-3 mb-3" autocomplete="off">
+                <input type="hidden" th:if="${_csrf!=null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="mb-3">
+                    <label class="form-label">Tên người đặt</label>
+                    <input class="form-control" name="customerName" placeholder="Họ tên" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Số điện thoại</label>
+                    <input class="form-control" name="phone" placeholder="SĐT" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" name="email" placeholder="Email" type="email" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Địa chỉ giao (nếu cần)</label>
+                    <input class="form-control" name="address" placeholder="Địa chỉ" />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-brand">Đặt trước (Khách)</button>
+                    <a class="btn btn-outline-light" th:href="@{/cart}">Quay lại giỏ hàng</a>
+                </div>
+            </form>
+
+            <!-- FORM NGƯỜI ĐÃ ĐĂNG NHẬP -->
+            <div th:if="${user != null}" class="card p-3">
+                <form th:action="@{/cart/confirm}" method="post" style="margin:0;">
+                    <input type="hidden" th:if="${_csrf!=null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div class="mb-2">
+                        <small class="text-muted">Bạn đang đăng nhập là:
+                            <strong th:text="${user.hoTen != null ? user.hoTen : (user.username != null ? user.username : 'User')}">User</strong>
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-brand">Xác nhận đặt trước</button>
+                        <a th:href="@{/cart}" class="btn btn-outline-light">Quay lại giỏ hàng</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+</th:block>

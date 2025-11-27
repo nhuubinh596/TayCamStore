@@ -1,0 +1,14 @@
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}">
+
+<title>Đặt trước thành công</title>
+
+    <section class="text-center py-5">
+        <div class="display-6 mb-2">✅ Đặt trước thành công!</div>
+        <p class="text-secondary">Chúng tôi sẽ liên hệ khi sản phẩm mở bán.</p>
+        <div class="mt-3 d-flex gap-2 justify-content-center">
+            <a class="btn btn-brand" th:href="@{/tay-cam/home}">Tiếp tục mua sắm</a>
+            <a class="btn btn-outline-light" th:href="@{/}">Về trang chủ</a>
+        </div>
+    </section>
+</th:block>

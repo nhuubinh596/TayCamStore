@@ -1,0 +1,116 @@
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}">
+
+    <title>Danh sách tay cầm</title>
+
+    <th:block th:fragment="extrahead">
+        <style>
+            .thumb{
+                width:64px;height:64px;border-radius:12px;object-fit:cover;background:#0a1227;
+                border:1px solid #223056; box-shadow:inset 0 0 0 1px #0f1730, 0 3px 10px rgba(0,0,0,.25);
+            }
+            .table td,.table th{vertical-align:middle}
+            .table tbody tr:hover td{background:rgba(26,38,92,.55)!important;color:#dfe8ff!important}
+            .table tbody tr:hover a{color:#84c2ff!important}
+            .section-head{justify-content:center}
+        </style>
+    </th:block>
+
+    <section>
+        <div class="section-head mb-3"><span>🎮</span><strong>Tay cầm nổi bật</strong></div>
+
+        <form class="row g-2 mb-3" th:action="@{/tay-cam/home}" method="get">
+            <div class="col-md-4">
+                <input class="form-control" name="q"
+                       th:value="${param.q != null ? param.q : ''}"
+                       placeholder="Tìm theo tên tay cầm...">
+            </div>
+            <div class="col-auto"><button class="btn btn-brand">Tìm kiếm</button></div>
+            <div class="col-auto"><a class="btn btn-outline-light" th:href="@{/tay-cam/home}">Tất cả</a></div>
+        </form>
+
+        <div class="card p-0">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th style="width:70px">#</th>
+                        <th style="width:90px">Hình</th>
+                        <th>Tên</th>
+                        <th>Hãng</th>
+                        <th style="width:160px">Giá</th>
+                        <th style="width:220px" class="text-end">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tc, st : ${ds}">
+                        <!-- STT -->
+                        <td th:text="${currentPage * pageSize + st.index + 1}">1</td>
+
+                        <td>
+                            <!-- ẢNH PLACEHOLDER khi rỗng -->
+                            <img class="thumb"
+                                 th:if="${#strings.isEmpty(tc.hinhAnh)}"
+                                 th:src="@{/images/placeholder.png}"
+                                 alt="Ảnh tay cầm">
+
+                            <!-- ẢNH ABSOLUTE URL -->
+                            <img class="thumb"
+                                 th:if="${!#strings.isEmpty(tc.hinhAnh) and #strings.startsWith(tc.hinhAnh,'http')}"
+                                 th:src="${tc.hinhAnh}"
+                                 alt="Ảnh tay cầm">
+
+                            <!-- ẢNH TRONG /static/images -->
+                            <img class="thumb"
+                                 th:if="${!#strings.isEmpty(tc.hinhAnh) and !#strings.startsWith(tc.hinhAnh,'http')}"
+                                 th:src="@{/images/{f}(f=${tc.hinhAnh})}"
+                                 alt="Ảnh tay cầm">
+                        </td>
+
+                        <td th:text="${tc.tenTayCam}">Tên tay cầm</td>
+                        <td th:text="${tc.hangSanXuat}">Hãng</td>
+
+                        <td class="price" th:text="${#numbers.formatDecimal(tc.gia,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</td>
+
+                        <td class="text-end d-flex gap-2 justify-content-end">
+                            <a class="btn btn-sm btn-outline-light"
+                               th:href="@{|/tay-cam/chi-tiet/${tc.maTayCam}|}">Chi tiết</a>
+
+                            <form th:action="@{|/cart/add/${tc.maTayCam}|}" method="post">
+                                <button class="btn btn-sm btn-brand">Thêm giỏ</button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(ds)}">
+                        <td colspan="6" class="text-center py-4">Không tìm thấy tay cầm phù hợp.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Phân trang: giữ q nếu có -->
+        <nav class="mt-3" th:if="${totalPages>1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage==0}? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{|/tay-cam/home?page=${currentPage-1}${param.q!=null?'&q='+param.q:''}|}">Trước</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                    th:classappend="${i==currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:text="${i+1}"
+                       th:href="@{|/tay-cam/home?page=${i}${param.q!=null?'&q='+param.q:''}|}"></a>
+                </li>
+
+                <li class="page-item" th:classappend="${currentPage+1==totalPages}? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{|/tay-cam/home?page=${currentPage+1}${param.q!=null?'&q='+param.q:''}|}">Sau</a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+</th:block>

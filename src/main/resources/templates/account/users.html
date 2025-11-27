@@ -1,0 +1,38 @@
+<th:block th:replace="~{_layout/main :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.w3.org/1999/xhtml">
+    <title>Người dùng</title>
+    <section>
+        <h5 class="mb-3">Danh sách người dùng</h5>
+        <div class="card p-0">
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead><tr><th>ID</th><th>Username</th><th>Role</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="u : ${usersPage.content}">
+                        <td th:text="${u.id}"></td>
+                        <td th:text="${u.username}"></td>
+                        <td th:text="${u.role}"></td>
+                        <td><a class="btn btn-sm btn-primary" th:href="@{|/admin/users/${u.id}|}">Xem</a></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(usersPage.content)}">
+                        <td colspan="4" class="text-center py-4">Chưa có người dùng.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <nav class="mt-3" th:if="${usersPage.totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${usersPage.first}? 'disabled'">
+                    <a class="page-link" th:href="@{|/admin/users?page=${usersPage.number-1}|}">Trước</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, usersPage.totalPages-1)}"
+                    th:classappend="${i==usersPage.number} ? 'active'">
+                    <a class="page-link" th:text="${i+1}" th:href="@{|/admin/users?page=${i}|}"></a>
+                </li>
+                <li class="page-item" th:classappend="${usersPage.last}? 'disabled'">
+                    <a class="page-link" th:href="@{|/admin/users?page=${usersPage.number+1}|}">Sau</a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+</th:block>

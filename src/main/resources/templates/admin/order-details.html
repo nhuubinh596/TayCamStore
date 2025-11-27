@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, false, false)}">
+
+    <title>Chi tiết đơn đặt trước</title>
+
+    <th:block th:fragment="extrahead">
+        <style>
+            .table td,.table th{vertical-align: middle}
+            .order-head .badge{font-size:.9rem}
+        </style>
+    </th:block>
+
+    <section>
+        <div class="section-head mb-3">
+            <span>🧾</span><strong>Chi tiết đơn #<span th:text="${order.id}">0</span></strong>
+        </div>
+
+        <!-- Thông tin chung -->
+        <div class="card p-3 mb-3 order-head">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="text-muted">Khách hàng</div>
+                    <div class="fw-semibold text-chuacotaikhoan" th:text="${order.tenKhachHang}">Tên KH</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-muted">Email</div>
+                    <div class="text-chuacotaikhoan" th:text="${order.email}">email@example.com</div>
+                </div>
+                <div class="col-md-2">
+                    <div class="text-muted">SĐT</div>
+                    <div class="text-chuacotaikhoan" th:text="${order.soDienThoai}">0123456789</div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-muted">Địa chỉ</div>
+                    <div class="text-chuacotaikhoan" th:text="${order.diaChi}">Địa chỉ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="card p-0">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th style="width:60px">#</th>
+                        <th>Sản phẩm</th>
+                        <th style="width:140px" class="text-end">Đơn giá</th>
+                        <th style="width:100px" class="text-center">SL</th>
+                        <th style="width:160px" class="text-end">Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="it,st : ${items}">
+                        <td th:text="${st.index + 1}">1</td>
+                        <td>
+                            <div class="fw-semibold" th:text="${it.tenSanPham != null ? it.tenSanPham : (it.tayCam != null ? it.tayCam.tenTayCam : 'Sản phẩm')}">Tay cầm</div>
+                            <div class="text-muted small" th:text="${it.tayCam != null ? 'Hãng: ' + it.tayCam.hangSanXuat : ''}">Hãng</div>
+                        </td>
+                        <td class="text-end" th:text="${#numbers.formatDecimal(it.donGia,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</td>
+                        <td class="text-center" th:text="${it.soLuong}">1</td>
+                        <td class="text-end"
+                            th:text="${#numbers.formatDecimal(it.donGia * it.soLuong,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(items)}">
+                        <td colspan="5" class="text-center py-4 text-black">Đơn này chưa có dòng hàng.</td>
+                    </tr>
+                    </tbody>
+                    <tfoot th:if="${!#lists.isEmpty(items)}">
+                    <tr>
+                        <th colspan="4" class="text-end">Tổng cộng</th>
+                        <th class="text-end" th:text="${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <a class="btn btn-outline-light" th:href="@{/admin/orders}">⬅ Quay lại</a>
+            <a class="btn btn-danger"
+               th:href="@{|/admin/orders/delete/${order.id}|}"
+               onclick="return confirm('Xoá đơn này?')">Xoá đơn</a>
+        </div>
+    </section>
+
+</th:block>
+</html>

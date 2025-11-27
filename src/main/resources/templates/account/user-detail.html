@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết người dùng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+<h3>Chi tiết người dùng</h3>
+
+<table class="table">
+    <tr><th>Username</th><td th:text="${u.username}"></td></tr>
+    <tr><th>Họ tên</th><td th:text="${u.hoTen} ?: '-'"></td></tr>
+    <tr><th>Email</th><td th:text="${u.email} ?: '-'"></td></tr>
+    <tr><th>SĐT</th><td th:text="${u.soDienThoai} ?: '-'"></td></tr>
+    <tr><th>Địa chỉ</th><td th:text="${u.diaChi} ?: '-'"></td></tr>
+    <tr><th>Role</th><td th:text="${u.role}"></td></tr>
+</table>
+
+<h5 class="mt-4">Đơn đặt trước của người dùng</h5>
+<table class="table table-bordered">
+    <thead class="table-dark">
+    <tr><th>ID</th><th>Người nhận</th><th>Email</th><th>SĐT</th><th>Địa chỉ</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="o : ${orders}">
+        <td th:text="${o.id}"></td>
+        <td th:text="${o.tenKhachHang}"></td>
+        <td th:text="${o.email}"></td>
+        <td th:text="${o.soDienThoai}"></td>
+        <td th:text="${o.diaChi}"></td>
+        <td><a th:href="@{|/admin/orders/${o.id}|}" class="btn btn-sm btn-outline-primary">Xem đơn</a></td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(orders)}">
+        <td colspan="6" class="text-muted text-center">Chưa có đơn nào</td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/admin/users}" class="btn btn-secondary">⬅ Quay lại</a>
+</body>
+</html>

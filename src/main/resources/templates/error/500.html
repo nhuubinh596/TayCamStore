@@ -1,0 +1,11 @@
+<th:block th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{}, false, false)}"
+          xmlns:th="http://www.thymeleaf.org">
+    <title>Lỗi 500</title>
+    <section>
+        <div class="card p-4">
+            <h3 class="text-danger mb-2">Đã có lỗi xảy ra</h3>
+            <p class="text-muted">Xin lỗi vì sự bất tiện. Vui lòng thử lại sau.</p>
+            <a class="btn btn-brand" th:href="@{/tay-cam/home}">Về trang chủ</a>
+        </div>
+    </section>
+</th:block>

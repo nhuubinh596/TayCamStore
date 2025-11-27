@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tay cầm – GamingController Store</title>
+
+    <!-- giữ layout chính (không thay đổi) -->
+    <th:block th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}"></th:block>
+
+    <!-- extra head: style local + top-right widgets -->
+    <th:block th:fragment="extrahead">
+        <link rel="stylesheet" th:href="@{/css/theme-dark.css}" />
+        <style>
+            /* container */
+            .container { max-width:1150px; margin:0 auto; padding:0 16px; }
+
+            /* section title */
+            .section-title{ font-size:2.2rem; font-weight:800; color:var(--ps-text-1); margin:18px 0; }
+
+            /* search box */
+            .search-box{ background:linear-gradient(180deg, rgba(10,16,40,0.7), rgba(6,11,26,0.6)); padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,0.03) }
+            .search-row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+            .search-row .input{ flex:1; min-width:200px }
+
+            /* products grid */
+            .products-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:18px; }
+            @media (max-width:1100px){ .products-grid{ grid-template-columns:repeat(3,1fr);} }
+            @media (max-width:760px){ .products-grid{ grid-template-columns:repeat(2,1fr);} }
+            @media (max-width:480px){ .products-grid{ grid-template-columns:repeat(1,1fr);} }
+
+            .product-card{
+                border-radius:12px; overflow:hidden;
+                background:linear-gradient(180deg, rgba(13,19,39,0.6), rgba(8,12,26,0.6));
+                border:1px solid rgba(255,255,255,0.03);
+                transition: transform .18s ease, box-shadow .18s ease, opacity .35s;
+                display:flex; flex-direction:column; height:100%;
+            }
+            .product-card:hover{ transform:translateY(-8px) scale(1.01); box-shadow:0 18px 40px rgba(20,40,90,0.35) }
+
+            .product-thumb{ height:180px; width:100%; object-fit:cover; background:#071028; border-bottom:1px solid rgba(255,255,255,0.02) }
+            .product-body{ padding:14px; display:flex; flex-direction:column; gap:8px; flex:1 }
+            .product-title{ font-weight:700; color:var(--ps-text-2); font-size:1rem }
+            .product-meta{ color:var(--ps-text-3); font-size:.92rem; display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+            .product-price{ color:var(--ps-accent-2); font-weight:800; margin-top:auto; font-size:1.05rem }
+            .product-actions{ display:flex; gap:10px; margin-top:12px }
+            .btn-ghost{ border:1px solid rgba(255,255,255,0.04); background:transparent; padding:8px 12px; border-radius:10px; color:var(--ps-text-2); cursor:pointer; }
+            .btn-add{ padding:8px 12px; border-radius:10px; background:linear-gradient(180deg,#5fb0ff,#3f8df6); color:#071028; border:none; cursor:pointer; font-weight:700 }
+
+            /* advanced collapse (start collapsed) */
+            #adv-box{ overflow:hidden; max-height:0; opacity:0; transition:max-height .36s, opacity .28s; }
+            #adv-box.show{ max-height:640px; opacity:1; }
+
+            /* top-right fixed widgets: cart + account */
+            #topWidgets {
+                position: fixed;
+                top: 12px;
+                right: 18px;
+                display:flex;
+                gap: 12px;
+                align-items:center;
+                z-index:12000;
+                pointer-events:none; /* allow click only on children */
+            }
+            #topWidgets > * { pointer-events:auto; }
+            .tw-cart, .tw-account {
+                background: rgba(6,11,26,0.78);
+                border: 1px solid rgba(255,255,255,0.03);
+                color: var(--ps-text-2);
+                padding:8px 12px;
+                border-radius:10px;
+                display:flex; gap:8px; align-items:center;
+                box-shadow:0 6px 18px rgba(2,6,18,0.45);
+                font-size:0.95rem;
+            }
+            .tw-cart a { color:inherit; text-decoration:none; display:flex; gap:8px; align-items:center; }
+            .tw-count { background: linear-gradient(180deg,#5fb0ff,#3f8df6); color:#071028; padding:4px 7px; border-radius:8px; font-weight:700; }
+
+            /* account dropdown */
+            #twAccountMenu { position:absolute; top:44px; right:0; min-width:180px; display:none; background:var(--ps-panel); border-radius:10px; box-shadow:0 10px 30px rgba(2,6,18,0.6); overflow:hidden; z-index:12001; }
+            #twAccountMenu a{ display:block; padding:10px 14px; color:var(--ps-text-2); text-decoration:none; }
+            #twAccountMenu a:hover{ background:rgba(255,255,255,0.03); }
+
+            /* load more button */
+            .load-more-wrap { text-align:center; margin-top:20px; }
+            .btn-load { padding:10px 18px; border-radius:12px; background:linear-gradient(180deg,#5fb0ff,#3f8df6); color:#071028; border:none; font-weight:800; cursor:pointer; }
+
+            /* hide extra items initially for load-more */
+            .product-card.hidden-item { display:none; opacity:0; transform:none !important; }
+
+            footer{ margin-top:36px; text-align:center; color:var(--ps-text-3); padding-bottom:28px; }
+        </style>
+    </th:block>
+</head>
+
+<body>
+
+<!-- TOP-RIGHT widgets -->
+<div id="topWidgets" aria-hidden="false">
+    <div class="tw-cart" title="Giỏ hàng">
+        <a th:href="@{/cart}">
+            <span style="font-size:1.05rem">🛒</span>
+            <span>Giỏ</span>
+            <span class="tw-count" th:text="${cart != null ? #lists.size(cart) : 0}">0</span>
+        </a>
+    </div>
+
+    <div class="tw-account" th:if="${user != null}" style="position:relative;">
+        <button id="twAccBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent; border:none; color:inherit; cursor:pointer;">
+            Xin chào, <span th:text="${user.hoTen}">User</span> ▾
+        </button>
+        <div id="twAccountMenu" role="menu" aria-hidden="true">
+            <a th:href="@{/account/profile}" role="menuitem">Cập nhật thông tin</a>
+            <a th:href="@{/logout}" role="menuitem">Đăng xuất</a>
+        </div>
+    </div>
+
+    <div class="tw-account" th:if="${user == null}">
+        <a th:href="@{/login}" style="color:var(--ps-text-2); text-decoration:none;">Đăng nhập</a>
+    </div>
+</div>
+
+<!-- MAIN section (single, no duplicates) -->
+<section class="container profile-page" th:fragment="section" aria-label="Danh sách tay cầm">
+    <h1 class="section-title">Tay cầm nổi bật</h1>
+
+    <!-- Search row: initial single-line search -->
+    <div class="search-box" role="search" aria-label="Tìm kiếm tay cầm">
+        <form th:action="@{/tay-cam/home}" method="get" class="search-row" role="search">
+            <input class="form-control input" type="text" name="name" placeholder="Tìm theo tên tay cầm..." th:value="${name}" aria-label="Tìm theo tên">
+            <button class="btn btn-brand" type="submit">Tìm kiếm</button>
+            <button id="btn-adv" class="btn btn-ghost" type="button" aria-expanded="false" aria-controls="adv-box">🔎 Tìm kiếm chi tiết</button>
+        </form>
+
+        <!-- advanced (collapsed by default) -->
+        <div id="adv-box" class="adv-box" aria-hidden="true" style="margin-top:12px;">
+            <form th:action="@{/tay-cam/search/advanced}" method="get" class="row g-2" style="gap:12px;">
+                <input class="form-control" type="text" name="keyword" placeholder="Từ khóa" th:value="${keyword}">
+                <input class="form-control" type="number" name="minPrice" placeholder="Giá tối thiểu" th:value="${minPrice}">
+                <input class="form-control" type="number" name="maxPrice" placeholder="Giá tối đa" th:value="${maxPrice}">
+                <input class="form-control" type="number" step="0.5" name="minRating" placeholder="Sao tối thiểu (vd: 3.5)" th:value="${minRating}">
+                <select name="sort" class="form-control" th:value="${sort}">
+                    <option value="">Mặc định</option>
+                    <option value="priceAsc" th:selected="${sort=='priceAsc'}">Giá ↑</option>
+                    <option value="priceDesc" th:selected="${sort=='priceDesc'}">Giá ↓</option>
+                </select>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-brand" type="submit">Áp dụng</button>
+                    <a th:href="@{/tay-cam/home}" class="btn btn-ghost">Đặt lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products grid -->
+    <div class="products-grid" id="productsGrid" role="list">
+        <!-- each card -->
+        <div class="product-card" th:each="tc,iterStat : ${listTayCam}" th:attr="data-index=${iterStat.index}">
+            <div style="position:relative;">
+                <!-- thay thế chỗ cũ: 1 thẻ img phức tạp -->
+                <!-- START Replace here -->
+                <div class="card-image" style="width:100%; height:180px; overflow:hidden; border-radius:8px;">
+                    <img class="card-thumb"
+                         th:src="${tc.hinhAnh}"
+                         th:alt="${tc.tenTayCam}"
+                         style="width:100%; height:180px; object-fit:cover; display:block;"/>
+                </div>
+                <!-- END Replace here -->
+                <div th:if="${tc.releaseDate != null and tc.releaseDate.isAfter(T(java.time.LocalDateTime).now())}"
+                     style="position:absolute; left:8px; top:8px; background:linear-gradient(90deg,#ffb86b,#ff7a7a); color:#071028; padding:6px 8px; border-radius:8px; font-weight:700; font-size:.85rem;">
+                    Preorder
+                </div>
+            </div>
+
+            <div class="product-body">
+                <div class="product-title" th:text="${tc.tenTayCam}">Tên tay cầm</div>
+                <div class="product-meta">
+                    <span th:text="${tc.hangSanXuat}">Hãng</span>
+                    <span>•</span>
+                    <span th:text="${tc.soLuongTon} + ' hàng'">Số lượng</span>
+                    <span class="rating" style="margin-left:auto" th:text="${avgRatings[tc.maTayCam] != null ? #numbers.formatDecimal(avgRatings[tc.maTayCam],1,1) + ' ★' : '0.0 ★'}"></span>
+                </div>
+
+                <div class="product-price" th:text="${#numbers.formatInteger(tc.gia,0,'POINT')} + ' ₫'">0 ₫</div>
+
+                <div class="product-actions">
+                    <a th:href="@{/tay-cam/chi-tiet/{id}(id=${tc.maTayCam})}" class="btn-ghost">Chi tiết</a>
+
+                    <form th:action="@{/cart/add/{id}(id=${tc.maTayCam})}" method="post" th:if="${tc.soLuongTon == null or tc.soLuongTon > 0}" style="margin:0">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-add">Thêm giỏ</button>
+                    </form>
+
+                    <button class="btn-ghost" th:if="${tc.soLuongTon != null and tc.soLuongTon <= 0}" disabled>Hết hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- load more -->
+    <div class="load-more-wrap">
+        <button id="loadMoreBtn" class="btn-load">LOAD THÊM TAY CẦM</button>
+    </div>
+
+</section>
+
+<!-- Cleanup duplicate sections if layout accidentally injects another -->
+<script>
+    (function(){
+        document.addEventListener('DOMContentLoaded', function(){
+            const secs = document.querySelectorAll('.profile-page');
+            if(secs.length > 1){
+                // keep first, remove others
+                for(let i=1;i<secs.length;i++){ secs[i].remove(); }
+            }
+        });
+    })();
+</script>
+
+<!-- UI + accessibility + AJAX add-to-cart + load-more -->
+<script>
+    // debounce helper
+    function debounce(fn, wait){ let t; return function(...a){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,a), wait); }; }
+
+    // animate entry
+    function animateCards(){
+        const cards = Array.from(document.querySelectorAll('.product-card')).filter(c=>!c.classList.contains('hidden-item'));
+        cards.forEach((c,i)=>{
+            c.style.opacity = 0;
+            c.style.transform = 'translateY(18px) scale(.995)';
+            c.style.transition = 'opacity .45s cubic-bezier(.2,.9,.3,1), transform .45s cubic-bezier(.2,.9,.3,1)';
+            setTimeout(()=>{ c.style.opacity=1; c.style.transform='translateY(0) scale(1)'; }, 60*i);
+        });
+    }
+
+    // advanced search toggle
+    function initAdvancedSearch(){
+        const btn = document.getElementById('btn-adv');
+        const box = document.getElementById('adv-box');
+        if(!btn || !box) return;
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            const open = box.classList.contains('show');
+            if(open){ box.classList.remove('show'); box.setAttribute('aria-hidden','true'); btn.setAttribute('aria-expanded','false'); }
+            else { box.classList.add('show'); box.setAttribute('aria-hidden','false'); btn.setAttribute('aria-expanded','true'); const first = box.querySelector('input,select,textarea,button'); if(first) first.focus({preventScroll:true}); }
+        });
+        document.addEventListener('keydown', function(e){
+            if(e.key === 'Escape' && box.classList.contains('show')){ box.classList.remove('show'); box.setAttribute('aria-hidden','true'); btn.setAttribute('aria-expanded','false'); }
+        });
+    }
+
+    // top account dropdown
+    function initTopAccount(){
+        const btn = document.getElementById('twAccBtn'), menu = document.getElementById('twAccountMenu');
+        if(!btn || !menu) return;
+        btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            const open = menu.style.display === 'block';
+            menu.style.display = open ? 'none' : 'block';
+            btn.setAttribute('aria-expanded', String(!open));
+            menu.setAttribute('aria-hidden', String(open));
+            if(!open){ const a = menu.querySelector('a'); if(a) a.focus(); }
+        });
+        document.addEventListener('click', function(e){
+            if(menu.style.display === 'block'){
+                if(!menu.contains(e.target) && !btn.contains(e.target)){
+                    menu.style.display = 'none';
+                    btn.setAttribute('aria-expanded','false');
+                }
+            }
+        });
+        document.addEventListener('keydown', function(e){
+            if(e.key === 'Escape' && menu.style.display === 'block'){
+                menu.style.display = 'none'; btn.setAttribute('aria-expanded','false'); btn.focus();
+            }
+        });
+    }
+
+    // ajax add-to-cart (tries to POST, server can return json {count:...})
+    function initAjaxAddToCart(){
+        document.querySelectorAll('form[action^="/cart/add"], form[action*="/cart/add/"]').forEach(form=>{
+            form.addEventListener('submit', function(e){
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"], button');
+                if(btn){ btn.disabled = true; const old = btn.textContent; btn.textContent = 'Đang...'; }
+
+                const action = form.getAttribute('action');
+                const csrf = form.querySelector('input[name="_csrf"]');
+                const headers = { 'Accept': 'application/json' };
+                if(csrf) headers['X-CSRF-TOKEN'] = csrf.value;
+
+                fetch(action, { method: 'POST', headers: headers, credentials: 'same-origin' })
+                    .then(resp => {
+                        if(!resp.ok) throw new Error('Network');
+                        return resp.json().catch(()=>({}));
+                    }).then(data => {
+                    let newCount = null;
+                    if(data && data.count != null) newCount = data.count;
+                    else {
+                        const span = document.querySelector('#topWidgets .tw-count');
+                        if(span) newCount = parseInt(span.textContent || '0') + 1;
+                    }
+                    if(newCount != null){
+                        const span = document.querySelector('#topWidgets .tw-count');
+                        if(span) span.textContent = newCount;
+                    }
+                    if(btn){ btn.disabled=false; btn.textContent = 'Thêm giỏ'; }
+                }).catch(err=>{
+                    console.warn('AJAX add failed, fallback to normal submit', err);
+                    form.submit();
+                });
+            });
+        });
+    }
+
+    // client-side load more (initial batch, then reveal)
+    function initLoadMore(){
+        const cards = Array.from(document.querySelectorAll('.product-card'));
+        const batch = 12;
+        // hide beyond batch
+        cards.forEach((c,i)=>{ if(i >= batch) c.classList.add('hidden-item'); else c.classList.remove('hidden-item'); });
+        const btn = document.getElementById('loadMoreBtn');
+        if(!btn) return;
+        if(cards.length <= batch) btn.style.display = 'none';
+        btn.addEventListener('click', function(){
+            let revealed = 0;
+            for(let i=0;i<cards.length && revealed < batch;i++){
+                const c = cards[i];
+                if(c.classList.contains('hidden-item')){
+                    c.classList.remove('hidden-item');
+                    revealed++;
+                }
+            }
+            animateCards();
+            // hide button if all revealed
+            const hiddenLeft = document.querySelectorAll('.product-card.hidden-item').length;
+            if(hiddenLeft === 0) btn.style.display = 'none';
+            // scroll to newly loaded area
+            setTimeout(()=> window.scrollBy({ top: 200, behavior: 'smooth' }), 200);
+        });
+    }
+
+    // entry initialization
+    document.addEventListener('DOMContentLoaded', function(){
+        animateCards();
+        initAdvancedSearch();
+        initTopAccount();
+        initAjaxAddToCart();
+        initLoadMore();
+
+        // ensure topWidgets count sync if layout also shows cart link
+        const topCount = document.querySelector('#topWidgets .tw-count');
+        const headerSpan = document.querySelector('header a[href$="/cart"] span');
+        if(!topCount && headerSpan){
+            // create top count
+            const tw = document.querySelector('#topWidgets .tw-cart');
+            if(tw){
+                const span = document.createElement('span');
+                span.className = 'tw-count';
+                span.style.marginLeft = '6px';
+                span.textContent = headerSpan.textContent || '0';
+                tw.appendChild(span);
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

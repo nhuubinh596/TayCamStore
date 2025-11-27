@@ -1,0 +1,48 @@
+:root{
+    --ps-bg: #071028;
+    --ps-panel: rgba(12,22,46,0.6);
+    --ps-text-1: #ffffff;
+    --ps-text-2: #dbe9ff;
+    --ps-text-3: #9aa7c5;
+    --ps-accent-1: #34b3ff;
+    --ps-accent-2: #5ad1ff;
+}
+
+/* base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#020617 0%, #071028 100%); color:var(--ps-text-2)}
+a{color:inherit;text-decoration:none}
+.container{max-width:1100px;margin:0 auto;padding:16px}
+
+/* Card */
+.card{background:var(--ps-panel); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03); box-shadow:0 6px 18px rgba(2,6,18,0.45)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:8px 12px;border:none;cursor:pointer;font-weight:600}
+.btn-brand{background:linear-gradient(90deg,var(--ps-accent-1),#4f7dff);color:#fff}
+.btn-outline-light{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--ps-text-2);padding:8px 12px}
+
+/* Forms */
+.form-label{display:block;margin-bottom:6px;color:var(--ps-text-2);font-weight:600}
+.form-control{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,0.12);color:var(--ps-text-2)}
+.form-control::placeholder{color:rgba(231,238,255,0.5)}
+.row.g-3{display:flex;flex-wrap:wrap;gap:12px}
+.col-md-6{flex:0 0 calc(50% - 6px)}
+.col-md-10{flex:0 0 calc(83.333% - 6px)}
+.col-md-12{flex:0 0 100%}
+.col-12{flex:0 0 100%}
+
+/* small helpers */
+.text-center{text-align:center}
+.mt-3{margin-top:12px}
+.form-actions{display:flex;gap:12px;align-items:center}
+
+/* table / reviews */
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.02);color:var(--ps-text-2)}
+.table thead th{color:var(--ps-text-3);font-weight:700}
+
+/* responsive */
+@media (max-width:900px){
+    .col-md-6,.col-md-10{flex:0 0 100%}
+}
