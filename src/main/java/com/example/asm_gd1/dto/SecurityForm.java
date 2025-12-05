@@ -1,4 +1,4 @@
-package com.example.asm_gd1.controller;
+package com.example.asm_gd1.dto;
 
 import lombok.Data;
 import lombok.Getter;

@@ -1,4 +1,3 @@
-// DatTruocItemRepository.java
 package com.example.asm_gd1.repository;
 
 import com.example.asm_gd1.model.DatTruocItem;
