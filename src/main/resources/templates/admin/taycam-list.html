@@ -5,7 +5,21 @@
 
     <th:block th:fragment="extrahead">
         <style>
-            .thumb{width:56px;height:56px;border-radius:12px;object-fit:cover;background:#111}
+            /* CSS CHUẨN MỚI CHO ẢNH TRONG BẢNG */
+            .table-thumb-container {
+                width: 80px; /* Kích thước cố định cho cột */
+                height: 80px;
+                overflow: hidden;
+                border-radius: 8px;
+                background: #1f2937; /* Nền tối */
+                padding: 5px; /* Thêm padding để ảnh không chạm viền */
+            }
+            .table-thumb-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain; /* FIX: Hiển thị toàn bộ ảnh */
+                display: block;
+            }
             .table td,.table th{vertical-align:middle}
         </style>
     </th:block>
@@ -31,7 +45,7 @@
                     <thead>
                     <tr>
                         <th style="width:80px">ID</th>
-                        <th style="width:84px">Hình</th>
+                        <th style="width:100px">Hình</th>
                         <th>Tên tay cầm</th>
                         <th>Hãng</th>
                         <th>Số lượng tồn kho</th>
@@ -43,11 +57,9 @@
                     <tr th:each="it : ${ds}">
                         <td th:text="${it.maTayCam}">1</td>
                         <td>
-                            <div class="card-image" style="width:100%; height:180px; overflow:hidden; border-radius:8px;">
-                                <img class="card-thumb"
-                                     th:src="${(it.hinhAnh != null && it.hinhAnh != '') ? it.hinhAnh : '/images/placeholder.png'}"
-                                     th:alt="${it.tenTayCam}"
-                                     style="width:100%; height:180px; object-fit:cover; display:block;"/>
+                            <div class="table-thumb-container">
+                                <img th:src="${(it.hinhAnh != null && it.hinhAnh != '') ? it.hinhAnh : '/images/placeholder.png'}"
+                                     th:alt="${it.tenTayCam}"/>
                             </div>
                         </td>
                         <td class="text-center" th:text="${it.tenTayCam}">Tên</td>
@@ -73,7 +85,6 @@
             <a class="btn btn-outline-light" th:href="@{/admin/home}">⬅ Admin Home</a>
         </div>
 
-        <!-- Phân trang (số trang 1→N; danh sách vẫn DESC nên item mới nằm trang 1) -->
         <nav class="mt-3" th:if="${totalPages>1}">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage==0}? 'disabled'">

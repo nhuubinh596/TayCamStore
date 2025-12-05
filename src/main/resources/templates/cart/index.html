@@ -149,11 +149,8 @@
                 <tr th:each="ci : ${cartItems}">
                     <td>
                         <div style="width:70px; height:70px; overflow:hidden; border-radius:8px;">
-                            <img th:if="${ci.hinhAnh != null and ci.hinhAnh.startsWith('/uploads')}"
-                                 th:src="${ci.hinhAnh}" th:alt="${ci.tenTayCam}" class="cart-thumb" />
-                            <img th:if="${ci.hinhAnh != null and !ci.hinhAnh.startsWith('/uploads')}"
-                                 th:src="@{/images/{fn}(fn=${ci.hinhAnh})}" th:alt="${ci.tenTayCam}" class="cart-thumb" />
-                            <img th:if="${ci.hinhAnh == null}" th:src="@{/images/placeholder.png}" th:alt="${ci.tenTayCam}" class="cart-thumb" />
+                            <img th:src="${ci.hinhAnh ?: '/images/placeholder.png'}"
+                                 th:alt="${ci.tenTayCam}" class="cart-thumb" />
                         </div>
                     </td>
 

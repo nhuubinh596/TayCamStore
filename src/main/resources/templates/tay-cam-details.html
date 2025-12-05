@@ -1,50 +1,102 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{_layout/main :: layout(title=~{::title}, content=~{::section}, extrahead=~{::extrahead}, showHeader=true, showFooter=true)}">
 <head>
-    <meta charset="UTF-8">
     <title th:text="${tc != null ? tc.tenTayCam : 'Chi tiết'}">Chi tiết</title>
-    <link rel="stylesheet" th:href="@{/css/theme-dark.css}" />
-    <style>
-        .detail-wrap{ max-width:1100px; margin:28px auto; padding:20px; }
-        .detail-grid{ display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; }
-        .detail-image{ flex:0 0 420px; max-width:100%; border-radius:12px; overflow:hidden; background:#071028; box-shadow:0 8px 28px rgba(2,6,18,0.45); }
-        .detail-image img{ width:100%; height:auto; display:block; object-fit:cover; }
-        .detail-meta{ flex:1 1 360px; min-width:260px; color:var(--ps-text-2); }
-        .product-title{ font-size:2rem; margin:0 0 .4rem; color:var(--ps-text-2); font-weight:800; }
-        .product-brand{ margin-bottom:.6rem; color:var(--ps-text-3); font-weight:700; }
-        .price-old{ color:var(--ps-text-3); margin-bottom:.25rem; text-decoration:line-through; }
-        .price-current{ font-size:1.6rem; color:var(--ps-accent-2); font-weight:800; margin-bottom:.6rem; }
-        .rating-row{ margin-bottom:12px; color:var(--ps-text-3); display:flex; align-items:center; gap:8px; }
-        .stars { font-size:18px; color:#ffd054; letter-spacing:2px; }
-        .stars .empty { color: rgba(255,208,84,0.25); }
-        .action-row{ display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap; }
-        .badge-pre{ background:linear-gradient(90deg,#ffb86b,#ff7a7a); color:#071028; padding:6px 10px; border-radius:8px; font-weight:700; }
-        .btn { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; }
-        .btn-brand { background: linear-gradient(90deg,#34b3ff,#4f7dff); color:#fff; box-shadow: 0 6px 14px rgba(79,125,255,0.12); }
-        .btn-ghost { background:transparent; color:var(--ps-text-2); border:1px solid rgba(255,255,255,0.04); padding:10px 12px; border-radius:10px; }
-        .text-muted{ color:var(--ps-text-3); }
-        @media (max-width:900px){
-            .detail-grid{ flex-direction:column; }
-            .detail-image{ height:260px; }
-        }
-        .table-responsive .table{ background:linear-gradient(180deg, rgba(17,23,56,.85), rgba(12,18,46,.7)); border-radius:10px; padding:6px; }
-    </style>
+
+    <th:block th:fragment="extrahead">
+        <style>
+            .detail-wrap{ max-width:1100px; margin:28px auto; padding:20px; }
+            .detail-grid{ display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; }
+            .detail-image{ flex:0 0 420px; max-width:100%; border-radius:12px; overflow:hidden; background:#071028; box-shadow:0 8px 28px rgba(2,6,18,0.45); }
+            .detail-image img{ width:100%; height:auto; display:block; object-fit:cover; }
+            .detail-meta{ flex:1 1 360px; min-width:260px; color:var(--ps-text-2); }
+            .product-title{ font-size:2rem; margin:0 0 .4rem; color:var(--ps-text-2); font-weight:800; }
+            .price-old{ color:var(--ps-text-3); margin-bottom:.25rem; text-decoration:line-through; }
+            .price-current{ font-size:1.6rem; color:var(--ps-accent-2); font-weight:800; margin-bottom:.6rem; }
+            .rating-row{ margin-bottom:12px; color:var(--ps-text-3); display:flex; align-items:center; gap:8px; }
+            .stars { font-size:18px; color:#ffd054; letter-spacing:2px; }
+            .stars .empty { color: rgba(255,208,84,0.25); }
+            .action-row{ display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap; }
+            .badge-pre{ background:linear-gradient(90deg,#ffb86b,#ff7a7a); color:#071028; padding:6px 10px; border-radius:8px; font-weight:700; }
+            .btn-ghost { background:transparent; color:var(--ps-text-2); border:1px solid rgba(255,255,255,0.04); padding:10px 12px; border-radius:10px; }
+            .btn-brand { background: linear-gradient(90deg,#34b3ff,#4f7dff); color:#fff; box-shadow: 0 6px 14px rgba(79,125,255,0.12); }
+            .reviews-box { background: linear-gradient(180deg, rgba(17,23,56,.85), rgba(12,18,46,.7)); border-radius:12px; padding:20px; margin-top:20px; }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('form.ajax-add').forEach(function (form) {
+                    form.addEventListener('submit', function (e) {
+                        e.preventDefault();
+
+                        const btn = form.querySelector('button[type="submit"]');
+                        if (btn) {
+                            btn.disabled = true;
+                            const oldText = btn.innerHTML;
+                            btn.innerHTML = 'Đang xử lý...';
+                        }
+
+                        const action = form.getAttribute('action');
+                        const csrfInput = form.querySelector('input[name="_csrf"]');
+                        const headers = { 'Accept': 'application/json' };
+                        if (csrfInput) headers['X-CSRF-TOKEN'] = csrfInput.value;
+
+                        fetch(action, {
+                            method: 'POST',
+                            headers: headers,
+                            credentials: 'same-origin'
+                        })
+                            .then(resp => {
+                                if (!resp.ok) throw new Error('Mạng lỗi hoặc không thể kết nối');
+                                return resp.json();
+                            })
+                            .then(data => {
+                                if (data && data.ok) {
+                                    // Cập nhật số lượng giỏ hàng trên UI
+                                    let newCount = data.count || 0;
+                                    const countSpan = document.querySelector('.tw-count');
+                                    if (countSpan) countSpan.textContent = newCount;
+
+                                    // Thông báo thành công
+                                    const successMsg = document.createElement('div');
+                                    successMsg.textContent = 'Đã thêm vào giỏ!';
+                                    successMsg.style.cssText = 'color: #9fe19a; margin-top: 10px; font-weight: bold;';
+                                    form.insertAdjacentElement('afterend', successMsg);
+                                    setTimeout(() => successMsg.remove(), 2000);
+                                }
+                            })
+                            .catch(err => {
+                                console.warn('AJAX add failed:', err);
+                            })
+                            .finally(() => {
+                                if (btn) {
+                                    btn.disabled = false;
+                                    btn.innerHTML = oldText;
+                                }
+                            });
+                    });
+                });
+            });
+        </script>
+    </th:block>
 </head>
 <body>
 
-<th:block th:replace="~{_layout/main :: layout(~{::title}, ~{::section}, ~{::extrahead}, true, true)}"></th:block>
-<section th:fragment="section">
+<section>
     <div class="detail-wrap card p-3">
         <div class="detail-grid">
             <div class="detail-image">
                 <img th:src="${tc != null && tc.hinhAnh != null ? tc.hinhAnh : '/images/placeholder.png'}"
                      th:alt="${tc != null ? tc.tenTayCam : 'Hình sản phẩm'}" />
             </div>
+
             <div class="detail-meta">
                 <h1 class="product-title" th:text="${tc != null ? tc.tenTayCam : 'Sản phẩm'}">Tên tay cầm</h1>
                 <div class="product-brand">Hãng: <strong th:text="${tc != null && tc.hangSanXuat != null ? tc.hangSanXuat : 'Chưa rõ'}">Hãng</strong></div>
 
-                <div class="price-old" th:if="${priceOriginal != null && priceOriginal > priceDisplayed}"
+                <div class="price-old"
+                     th:if="${priceOriginal != null && priceOriginal > priceDisplayed}"
                      th:text="'Giá gốc: ' + ${#numbers.formatInteger(priceOriginal,0,'POINT')} + ' ₫'">Giá gốc</div>
 
                 <div class="price-current"
@@ -62,7 +114,9 @@
                 <div class="action-row">
                     <form class="ajax-add" th:action="@{|/cart/add/${tc.maTayCam}|}" method="post" style="margin:0; display:inline-block">
                         <input type="hidden" th:if="${_csrf!=null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button type="submit" class="btn btn-brand" style="min-width:150px">Thêm vào giỏ hàng</button>
+                        <button type="submit" class="btn btn-brand" style="min-width:150px">
+                            <i class="fa-solid fa-cart-plus me-1"></i> Thêm vào giỏ hàng
+                        </button>
                     </form>
 
                     <a th:href="@{/tay-cam/home}" class="btn-ghost btn-back" style="display:inline-flex;align-items:center;padding:10px 14px">← Quay lại</a>
@@ -86,96 +140,58 @@
 
         <hr class="my-4" />
 
-        <h5>Đánh giá sản phẩm</h5>
+        <div class="reviews-box card p-4">
+            <h5 class="text-white">Đánh giá sản phẩm</h5>
 
-        <div class="table-responsive">
-            <table class="table table-sm align-middle">
-                <thead>
-                <tr>
-                    <th>Người đánh giá</th>
-                    <th class="text-center" style="width:90px">Số sao</th>
-                    <th>Nội dung</th>
-                    <th style="width:80px"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="d : ${dsDanhGia}">
-                    <td th:text="${d.tenNguoiDanhGia}">---</td>
-                    <td class="text-center" th:text="${d.soSaoDanhGia}">0</td>
-                    <td th:text="${d.noiDung}">---</td>
-                    <td>
-                        <a class="btn btn-sm btn-outline-danger" th:href="@{'/danh-gia/xoa/' + ${d.id}}"
-                           onclick="return confirm('Xoá đánh giá này?')">Xoá</a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(dsDanhGia)}">
-                    <td colspan="4" class="text-center text-muted">Chưa có đánh giá.</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive mt-3">
+                <table class="table table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Người đánh giá</th>
+                        <th class="text-center" style="width:90px">Số sao</th>
+                        <th>Nội dung</th>
+                        <th style="width:80px"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${dsDanhGia}">
+                        <td th:text="${d.tenNguoiDanhGia}">---</td>
+                        <td class="text-center" th:text="${d.soSaoDanhGia}">0</td>
+                        <td th:text="${d.noiDung}">---</td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-danger" th:href="@{'/danh-gia/xoa/' + ${d.id}}"
+                               onclick="return confirm('Xoá đánh giá này?')">Xoá</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(dsDanhGia)}">
+                        <td colspan="4" class="text-center text-muted">Chưa có đánh giá.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <form class="row g-2 mt-3 review-form" th:action="@{/danh-gia/add}" th:object="${danhGiaForm}" method="post" autocomplete="off">
+                <input type="hidden" name="maTayCam" th:value="${tc != null ? tc.maTayCam : ''}" />
+                <input type="hidden" th:if="${_csrf!=null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div class="col-md-3">
+                    <label class="form-label text-white">Tên của bạn</label>
+                    <input class="form-control" th:field="*{tenNguoiDanhGia}" placeholder="Tên của bạn" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-white">Số sao (1-5)</label>
+                    <input class="form-control" type="number" th:field="*{soSaoDanhGia}" min="1" max="5" value="5" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-white">Nội dung</label>
+                    <input class="form-control" th:field="*{noiDung}" placeholder="Nội dung đánh giá">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <label class="form-label text-white opacity-0">Gửi</label>
+                    <button class="btn btn-brand w-100">Gửi</button>
+                </div>
+            </form>
         </div>
-
-        <form class="row g-2 mt-3" th:action="@{/danh-gia/add}" method="post" autocomplete="off">
-            <input type="hidden" name="maTayCam" th:value="${tc != null ? tc.maTayCam : ''}" />
-            <input type="hidden" th:if="${_csrf!=null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-            <div class="col-md-4">
-                <input class="form-control" name="tenNguoiDanhGia" placeholder="Tên người đánh giá" required>
-            </div>
-            <div class="col-md-2">
-                <input class="form-control" type="number" name="soSaoDanhGia" min="1" max="5" value="5" required>
-            </div>
-            <div class="col-md-4">
-                <input class="form-control" name="noiDung" placeholder="Nội dung">
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-brand w-100">Gửi</button>
-            </div>
-        </form>
-
-    </div>
 </section>
-
-<!-- JS: bắt form .ajax-add để gửi fetch và update counter -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('form.ajax-add').forEach(function (form) {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const btn = form.querySelector('button[type="submit"]');
-                if (btn) { btn.disabled = true; const old = btn.textContent; btn.textContent = 'Đang...'; }
-                const action = form.getAttribute('action');
-                const csrfInput = form.querySelector('input[name="_csrf"]');
-                const headers = { 'Accept': 'application/json' };
-                if (csrfInput) headers['X-CSRF-TOKEN'] = csrfInput.value;
-
-                fetch(action, { method: 'POST', headers: headers, credentials: 'same-origin' })
-                    .then(resp => {
-                        if (!resp.ok) throw new Error('Network');
-                        return resp.json().catch(()=>({}));
-                    })
-                    .then(data => {
-                        let newCount = null;
-                        if (data && data.count != null) newCount = data.count;
-                        else {
-                            const span = document.querySelector('#topWidgets .tw-count');
-                            if (span) newCount = parseInt(span.textContent || '0') + 1;
-                        }
-                        if (newCount != null) {
-                            const span = document.querySelector('#topWidgets .tw-count');
-                            if (span) span.textContent = newCount;
-                        }
-                        if (btn) { btn.disabled = false; btn.textContent = 'Thêm vào giỏ hàng'; }
-                    })
-                    .catch(err => {
-                        console.warn('AJAX add failed, fallback to normal submit', err);
-                        // fallback: normal submit (so it still works)
-                        form.submit();
-                    });
-            });
-        });
-    });
-</script>
-
 </body>
 </html>

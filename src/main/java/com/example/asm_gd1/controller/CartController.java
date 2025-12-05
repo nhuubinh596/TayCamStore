@@ -76,6 +76,19 @@ public class CartController {
         }
 
         TayCam tc = opt.get();
+
+        double originalPrice = tc.getGia() != null ? tc.getGia() : 0.0;
+        double finalPrice = originalPrice;
+
+        if (tc.getReleaseDate() != null && tc.getReleaseDate().isAfter(LocalDateTime.now())) {
+            double discountPct = tc.getPreorderDiscount() != null ? tc.getPreorderDiscount() : 0.0;
+            if (discountPct > 0.0) {
+                finalPrice = originalPrice * (1.0 - discountPct / 100.0);
+            }
+        }
+
+        BigDecimal price = BigDecimal.valueOf(finalPrice);
+
         List<CartItem> cart = getCart(session);
 
         Optional<CartItem> existing = findItem(cart, id);
@@ -83,9 +96,7 @@ public class CartController {
             CartItem it = existing.get();
             int newQty = Math.max(0, it.getSoLuong() + qty);
             it.setSoLuong(newQty);
-            it.setThanhTien(it.getThanhTien());
         } else {
-            BigDecimal price = tc.getGia() != null ? BigDecimal.valueOf(tc.getGia()) : BigDecimal.ZERO;
             CartItem it = new CartItem(tc.getMaTayCam(), tc.getTenTayCam(), tc.getHinhAnh(), price, Math.max(1, qty));
             cart.add(it);
         }

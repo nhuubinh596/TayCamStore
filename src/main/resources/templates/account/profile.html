@@ -1,155 +1,108 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:replace="~{_layout/main :: layout(title=~{::title}, content=~{::section}, extrahead=~{::extrahead}, showHeader=true, showFooter=true)}">
+
     <title>Cập nhật thông tin - GamingController</title>
-    <link rel="stylesheet" th:href="@{/css/theme-dark.css}" />
-    <style>
-        /* local overrides to ensure visibility */
-        body { background: linear-gradient(180deg,#020617 0%, #071028 100%); }
-        .page-wrap { max-width: 980px; margin: 36px auto; padding: 20px; }
-        header.site-bar { padding: 18px 0; text-align:center; color:#eaf6ff; font-weight:800; font-size:20px; }
-        .section-title { font-size: 30px; font-weight:800; color:#fff; text-align:center; margin: 6px 0 18px; text-shadow:0 6px 20px rgba(0,0,0,0.6); }
-        .card { background: linear-gradient(180deg, rgba(12,22,46,0.62), rgba(7,10,25,0.48)); border-radius:12px; padding:18px; border:1px solid rgba(255,255,255,0.03); box-shadow: 0 12px 30px rgba(2,6,18,0.5); }
-        .form-label { color:#e6f0ff; font-weight:700; margin-bottom:6px; display:block; }
-        .form-control { background: rgba(2,8,28,0.55); color:#eaf6ff; border-radius:10px; border:1px solid rgba(255,255,255,0.03); padding:10px 12px; }
-        .btn-brand { background: linear-gradient(90deg,#57c0ff,#6bb7ff); color:#071028; border-radius:12px; padding:12px; font-weight:800; border:none; display:block; width:100%; }
-        .btn-outline-light { background:transparent; border:1px solid rgba(255,255,255,0.06); color:#eaf6ff; padding:11px; border-radius:10px; width:100%; }
-        .actions { margin-top:14px; display:flex; gap:12px; }
-        .actions .col { flex:1; }
-        @media (max-width:700px){ .actions{ flex-direction:column } }
-        body {
-            background: radial-gradient(circle at 50% -20%, rgba(86,120,255,0.4), rgba(10,15,30,1)),
-            radial-gradient(circle at 80% 120%, rgba(120,80,255,0.25), rgba(5,10,25,1)),
-            linear-gradient(180deg, #010414, #050b1d, #070c24);
-            background-attachment: fixed;
-            overflow-x: hidden;
-        }
-        .glow-container {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1200px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(100,130,255,0.28), rgba(0,0,0,0));
-            filter: blur(90px);
-            z-index: -1;
-            pointer-events: none;
-        }
-        .card {
-            background: rgba(15,20,40,0.66);
-            backdrop-filter: blur(18px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.55);
-            transition: 0.3s ease;
-        }
-        .card:hover {
-            box-shadow: 0 28px 60px rgba(0,0,0,0.7);
-        }
-        .section-title {
-            font-size: 32px;
-            font-weight: 900;
-            color: #ffffff;
-            margin-bottom: 25px;
-            letter-spacing: 1px;
-        }
-    </style>
 
-    <script th:src="@{/js/main.js}" defer></script>
-</head>
-<body>
+    <th:block th:fragment="extrahead">
+        <style>
+            /* Cải thiện CSS cho khoảng cách và căn chỉnh */
+            .page-wrap { max-width: 980px; margin: 36px auto; padding: 20px; }
+            .section-title { font-size: 32px; font-weight:900; color:#fff; text-align:center; margin: 6px 0 18px; text-shadow:0 6px 20px rgba(0,0,0,0.6); }
+            .card { background: rgba(15,20,40,0.66); backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.55); }
+            .form-label { color:#e6f0ff!important; font-weight:700; margin-bottom:6px; display:block; }
+            .form-control { background: rgba(6,12,28,0.48); color:#eaf6ff; border:1px solid rgba(255,255,255,0.03); height:48px; border-radius: 10px; }
+            .actions { margin-top: 24px; display:flex; gap:16px; align-items:center; }
+            .btn-brand, .btn-return { height: 48px; font-size: 1rem; }
+        </style>
+    </th:block>
 
-<div class="glow-container"></div>
-<header class="site-bar">🎮 GamingController Store</header>
+    <section>
+        <div class="page-wrap">
+            <h1 class="section-title">Cập nhật thông tin</h1>
 
-<div class="page-wrap">
+            <div th:if="${msgSuccess}" class="alert-box alert-success" th:text="${msgSuccess}">Cập nhật thành công!</div>
+            <div th:if="${error}" class="alert-box alert-danger" th:text="${error}">Lỗi bảo mật!</div>
+            <div th:if="${msgError}" class="alert-box alert-danger" th:text="${msgError}">Lỗi chung!</div>
+            <div th:if="${success}" class="alert-box alert-success" th:text="${success}">Cập nhật bảo mật thành công!</div>
 
-    <h1 class="section-title">Cập nhật thông tin</h1>
-    <div class="card mb-4">
-        <form th:action="@{/account/profile}" th:object="${form}" method="post" style="margin:0;">
-            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <input type="hidden" id="username" th:field="*{username}" />
+            <div class="card mb-4">
+                <form th:action="@{/account/profile}" th:object="${form}" method="post" class="row g-3">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" id="username" th:field="*{username}" />
 
-            <div style="margin-bottom:14px;">
-                <label class="form-label">Họ tên</label>
-                <input class="form-control" th:field="*{hoTen}" placeholder="Họ và tên" />
+                    <div class="col-md-6">
+                        <label class="form-label">Họ tên</label>
+                        <input class="form-control" th:field="*{hoTen}" placeholder="Họ và tên" />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+                        <input class="form-control" th:field="*{soDienThoai}" placeholder="Số điện thoại" />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('soDienThoai')}" th:errors="*{soDienThoai}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" th:field="*{email}" placeholder="email@vd.com" />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Địa chỉ</label>
+                        <input class="form-control" th:field="*{diaChi}" placeholder="Địa chỉ" />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('diaChi')}" th:errors="*{diaChi}"></div>
+                    </div>
+
+                    <div class="col-12 actions">
+                        <div style="flex-grow: 1;">
+                            <button class="btn btn-brand btn-lg" type="submit">💾 Lưu thay đổi</button>
+                        </div>
+                        <div style="width:150px">
+                            <a th:href="@{/tay-cam/home}" class="btn btn-outline-light btn-return">← Quay lại</a>
+                        </div>
+                    </div>
+                </form>
             </div>
 
-            <div style="margin-bottom:14px;">
-                <label class="form-label">Số điện thoại</label>
-                <input class="form-control" th:field="*{soDienThoai}" placeholder="Số điện thoại" />
+            <div class="card">
+                <form th:action="@{/account/profile/security}" method="post" class="row g-3">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div class="col-12">
+                        <h3 class="text-center" style="color:#f4fbff;margin-bottom:12px;font-weight:700;">Đổi tài khoản & mật khẩu</h3>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Mật khẩu hiện tại *</label>
+                        <input type="password" name="currentPassword" class="form-control pw-field" placeholder="Nhập mật khẩu hiện tại" required />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Tên đăng nhập mới (không bắt buộc)</label>
+                        <input type="text" name="newUsername" class="form-control" placeholder="Để trống nếu không đổi" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <input type="password" name="newPassword" class="form-control pw-field" placeholder="Ít nhất 6 ký tự" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nhập lại mật khẩu mới</label>
+                        <input type="password" name="confirmPassword" class="form-control pw-field" placeholder="Nhập lại mật khẩu" />
+                    </div>
+
+                    <div class="col-12 actions">
+                        <div class="col">
+                            <button class="btn btn-brand" type="submit">🔒 Cập nhật bảo mật</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-outline-light" onclick="document.querySelectorAll('.pw-field').forEach(i => i.type = i.type === 'password' ? 'text' : 'password');">👁 Hiện/ẩn mật khẩu</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-
-            <div style="margin-bottom:14px;">
-                <label class="form-label">Email</label>
-                <input class="form-control" th:field="*{email}" placeholder="email@vd.com" />
-            </div>
-
-            <div style="margin-bottom:14px;">
-                <label class="form-label">Địa chỉ</label>
-                <input class="form-control" th:field="*{diaChi}" placeholder="Địa chỉ" />
-            </div>
-
-            <div class="btn-row mt-3">
-                <div class="col" style="flex:1">
-                    <button class="btn btn-brand btn-lg" type="submit">💾 Lưu thay đổi</button>
-                </div>
-                <div style="width:150px">
-                    <a th:href="@{/tay-cam/home}" class="btn btn-outline-light btn-return">← Quay lại</a>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <div class="card">
-        <form th:action="@{/account/profile/security}" method="post" style="margin:0;">
-            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-            <h3 style="text-align:center;color:#f4fbff;margin-bottom:12px;font-weight:700;">Đổi tài khoản & mật khẩu</h3>
-
-            <div style="margin-bottom:12px;">
-                <label class="form-label">Mật khẩu hiện tại *</label>
-                <input type="password" name="currentPassword" class="form-control pw-field" placeholder="Nhập mật khẩu hiện tại" required />
-            </div>
-
-            <div style="margin-bottom:12px;">
-                <label class="form-label">Tên đăng nhập mới (không bắt buộc)</label>
-                <input type="text" name="newUsername" class="form-control" placeholder="Để trống nếu không đổi" />
-            </div>
-
-            <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                <div style="flex:1;min-width:200px;margin-bottom:12px;">
-                    <label class="form-label">Mật khẩu mới</label>
-                    <input type="password" name="newPassword" class="form-control pw-field" placeholder="Ít nhất 6 ký tự" />
-                </div>
-                <div style="flex:1;min-width:200px;margin-bottom:12px;">
-                    <label class="form-label">Nhập lại mật khẩu mới</label>
-                    <input type="password" name="confirmPassword" class="form-control pw-field" placeholder="Nhập lại mật khẩu" />
-                </div>
-            </div>
-
-            <div class="actions" style="margin-top:8px;">
-                <div class="col"><button class="btn-brand" type="submit">🔒 Cập nhật bảo mật</button></div>
-                <div class="col"><button type="button" class="btn-outline-light" id="togglePassBtn">👁 Hiện/ẩn mật khẩu</button></div>
-            </div>
-        </form>
-    </div>
-
-</div>
-
-<footer style="text-align:center;padding:30px 0;color:rgba(255,255,255,0.6);">© 2025 GamingController Store</footer>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function(){
-        const t = document.getElementById('togglePassBtn');
-        if (t) t.addEventListener('click', function(){
-            document.querySelectorAll('.pw-field').forEach(i => i.type = i.type === 'password' ? 'text' : 'password');
-        });
-    });
-</script>
-</body>
-</html>
+        </div>
+    </section>
+</th:block>

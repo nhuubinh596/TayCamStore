@@ -83,9 +83,9 @@
         <button type="submit" class="btn btn-success" th:disabled="${chonTayCam == null}">Đặt trước</button>
         <a href="/tay-cam/home" class="btn btn-secondary">Quay lại</a>
     </form>
-<div th:if="${chonTayCam == null}" class="alert alert-warning mt-3">
-    Vui lòng chọn một tay cầm để tiếp tục đặt trước.
-</div>
+    <div th:if="${chonTayCam == null}" class="alert alert-warning mt-3">
+        Vui lòng chọn một tay cầm để tiếp tục đặt trước.
+    </div>
 
 </body>
 </html>

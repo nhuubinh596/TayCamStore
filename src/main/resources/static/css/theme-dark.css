@@ -873,5 +873,3 @@ a.btn, button.btn { text-decoration: none; color: inherit; }
     box-shadow: 0 8px 20px rgba(2,6,18,0.35);
 }
 .btn-return:hover { transform: translateY(-2px); background: rgba(255,255,255,0.03); }
-
-

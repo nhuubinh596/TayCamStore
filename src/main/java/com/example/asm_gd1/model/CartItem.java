@@ -1,5 +1,6 @@
 package com.example.asm_gd1.model;
 
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 

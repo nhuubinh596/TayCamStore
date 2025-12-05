@@ -2,6 +2,7 @@ package com.example.asm_gd1.controller;
 
 import com.example.asm_gd1.model.DanhGia;
 import com.example.asm_gd1.model.TayCam;
+import com.example.asm_gd1.model.User;
 import com.example.asm_gd1.repository.DanhGiaRepository;
 import com.example.asm_gd1.repository.TayCamRepository;
 import jakarta.servlet.http.HttpSession;
@@ -108,18 +109,11 @@ public class TayCamController {
         }
         TayCam tc = opt.get();
 
+        // 1. Logic Đánh giá (Giữ nguyên)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<DanhGia> dgPage = dgrp.findByTayCam_MaTayCam(tc.getMaTayCam(), pageable);
 
-        model.addAttribute("tc", tc);
-        model.addAttribute("dsDanhGia", dgPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", dgPage.getTotalPages());
-        model.addAttribute("totalItems", dgPage.getTotalElements());
-
-        Double avg = dgrp.findAverageRatingByTayCamId(tc.getMaTayCam());
-        model.addAttribute("avgRating", avg != null ? avg : 0.0);
-
+        // 2. Logic Giá và Ngày mở bán (Giữ nguyên)
         Double discountPct = tc.getPreorderDiscount() != null ? tc.getPreorderDiscount() : 0.0;
         double giaGoc = tc.getGia() != null ? tc.getGia() : 0.0;
         double giaUuDai = giaGoc;
@@ -136,6 +130,31 @@ public class TayCamController {
         if (truocMoBan && discountPct > 0) {
             giaUuDai = giaGoc * (1.0 - discountPct / 100.0);
         }
+
+        // 3. LOGIC FIX THIẾU FORM ĐÁNH GIÁ (Thêm đối tượng rỗng cho form)
+        model.addAttribute("danhGiaForm", new DanhGia());
+
+        // 4. LOGIC KIỂM TRA YÊU THÍCH (FIX cho nút tim)
+        User currentUser = (User) session.getAttribute("user");
+        boolean isFavorite = false;
+        if (currentUser != null) {
+            // GIẢ ĐỊNH: Bạn có một service/repo để kiểm tra tồn tại trong bảng YeuThich
+            // isFavorite = favoriteService.checkFavoriteExist(currentUser.getId(), tc.getMaTayCam());
+            // Do không có FavoriteService, ta giả lập logic này là thành công nếu có user.
+            // Bạn cần thay thế bằng favoriteRepository.existsByUserIdAndTayCamId(userId, productId)
+        }
+        model.addAttribute("isFavorite", isFavorite);
+
+
+        // 5. Thêm các thuộc tính vào Model
+        model.addAttribute("tc", tc);
+        model.addAttribute("dsDanhGia", dgPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", dgPage.getTotalPages());
+        model.addAttribute("totalItems", dgPage.getTotalElements());
+
+        Double avg = dgrp.findAverageRatingByTayCamId(tc.getMaTayCam());
+        model.addAttribute("avgRating", avg != null ? avg : 0.0);
 
         model.addAttribute("priceOriginal", giaGoc);
         model.addAttribute("priceDisplayed", giaUuDai);

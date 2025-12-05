@@ -55,20 +55,27 @@ public class AccountController {
                               HttpSession session,
                               RedirectAttributes ra) {
         if (br.hasErrors()) {
+            ra.addFlashAttribute("msgError", "Lỗi nhập liệu. Vui lòng kiểm tra lại các trường.");
             return "account/profile";
         }
 
-        User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        User sessionUser = (User) session.getAttribute("user");
+        if (sessionUser == null) return "redirect:/login";
 
-        user.setHoTen(form.getHoTen());
-        user.setEmail(form.getEmail());
-        user.setSoDienThoai(form.getSoDienThoai());
-        user.setDiaChi(form.getDiaChi());
-        userRepo.save(user);
+        User dbUser = userRepo.findById(sessionUser.getId()).orElse(null);
+        if (dbUser == null) {
+            ra.addFlashAttribute("msgError", "Không tìm thấy tài khoản để cập nhật.");
+            return "redirect:/account/profile";
+        }
 
-        session.setAttribute("user", user);
-        ra.addFlashAttribute("msgSuccess", "Cập nhật thông tin thành công");
+        dbUser.setHoTen(form.getHoTen());
+        dbUser.setEmail(form.getEmail());
+        dbUser.setSoDienThoai(form.getSoDienThoai());
+        dbUser.setDiaChi(form.getDiaChi());
+        userRepo.save(dbUser);
+
+        session.setAttribute("user", dbUser);
+        ra.addFlashAttribute("msgSuccess", "Cập nhật thông tin thành công!");
         return "redirect:/account/profile";
     }
 

@@ -1,302 +1,176 @@
-﻿CREATE DATABASE asm_taycam;
+﻿DROP DATABASE GamingController;
+
+CREATE DATABASE GamingController;
 GO
-USE asm_taycam;
+
+USE GamingController;
 GO
 
--- 1. Users
-CREATE TABLE users (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL,
-    hoTen NVARCHAR(100),
-    soDienThoai VARCHAR(20),
-    email VARCHAR(150),
-    diaChi NVARCHAR(255)
-);
-
--- 2. Hãng SX (Mới)
-CREATE TABLE HangSanXuat (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    tenHang NVARCHAR(100) NOT NULL,
-    hinhAnh NVARCHAR(255)
-);
-
--- 3. Thể Loại (Mới)
-CREATE TABLE TheLoai (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    tenTheLoai NVARCHAR(100) NOT NULL
-);
-
--- 4. Tay Cầm
 CREATE TABLE TayCam (
     maTayCam INT IDENTITY(1,1) PRIMARY KEY,
-    tenTayCam NVARCHAR(255) NOT NULL,
     hinhAnh NVARCHAR(255) DEFAULT '/images/Vader4Pro.jpg',
-    gia FLOAT DEFAULT 0,
+    tenTayCam NVARCHAR(255),
+    hangSanXuat NVARCHAR(100),
+    gia DECIMAL(18, 2) NOT NULL, 
     soLuongTon INT DEFAULT 0,
-    releaseDate DATETIME2,
-    preorder_discount FLOAT DEFAULT 0,
-    moTa NVARCHAR(MAX),
-    hangSanXuatId INT,
-    theLoaiId INT,
-    CONSTRAINT FK_TayCam_Hang FOREIGN KEY (hangSanXuatId) REFERENCES HangSanXuat(id),
-    CONSTRAINT FK_TayCam_TheLoai FOREIGN KEY (theLoaiId) REFERENCES TheLoai(id)
+    releaseDate DATETIME,
+    preorder_discount FLOAT DEFAULT 0.0
 );
+GO
 
--- 5. Khuyến Mãi (Mới)
-CREATE TABLE KhuyenMai (
+CREATE TABLE users (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    maCode VARCHAR(20) UNIQUE NOT NULL,
-    phanTramGiam FLOAT NOT NULL,
-    ngayHetHan DATETIME2
-);
-
--- 6. PT Thanh Toán (Mới)
-CREATE TABLE PhuongThucThanhToan (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    tenPhuongThuc NVARCHAR(100) NOT NULL
-);
-
--- 7. Đặt Trước
-CREATE TABLE DatTruoc (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    tenKhachHang NVARCHAR(100),
-    soDienThoai VARCHAR(20),
-    email VARCHAR(150),
+    username NVARCHAR(255) NOT NULL,
+    password NVARCHAR(100) NOT NULL,
+    role NVARCHAR(20) NOT NULL,
+    hoTen NVARCHAR(100),
+    soDienThoai NVARCHAR(20),
+    email NVARCHAR(150),
     diaChi NVARCHAR(255),
-    giaDatTruoc FLOAT,
-    ngayDat DATETIME2 DEFAULT GETDATE(),
-    trangThai NVARCHAR(50),
-    user_id INT,
-    pttt_id INT,
-    khuyen_mai_id INT,
-    CONSTRAINT FK_DatTruoc_User FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    CONSTRAINT FK_DatTruoc_PTTT FOREIGN KEY (pttt_id) REFERENCES PhuongThucThanhToan(id),
-    CONSTRAINT FK_DatTruoc_KM FOREIGN KEY (khuyen_mai_id) REFERENCES KhuyenMai(id)
+    CONSTRAINT UQ_users_username UNIQUE (username)
 );
+GO
 
--- 8. Chi Tiết Đặt Trước
-CREATE TABLE DatTruocItem (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    orderId INT NOT NULL,
-    tayCamId INT,
-    tenSanPham NVARCHAR(255),
-    donGia FLOAT,
-    soLuong INT,
-    CONSTRAINT FK_Item_Order FOREIGN KEY (orderId) REFERENCES DatTruoc(id) ON DELETE CASCADE,
-    CONSTRAINT FK_Item_TayCam FOREIGN KEY (tayCamId) REFERENCES TayCam(maTayCam) ON DELETE SET NULL
-);
-
--- 9. Đánh Giá
 CREATE TABLE DanhGia (
     id INT IDENTITY(1,1) PRIMARY KEY,
     tenNguoiDanhGia NVARCHAR(100),
     soSaoDanhGia INT,
     noiDung NVARCHAR(MAX),
-    ngayDanhGia DATETIME2 DEFAULT GETDATE(),
     tayCamId INT NOT NULL,
-    CONSTRAINT FK_DanhGia_TayCam FOREIGN KEY (tayCamId) REFERENCES TayCam(maTayCam) ON DELETE CASCADE
+    FOREIGN KEY (tayCamId) REFERENCES TayCam(maTayCam) ON DELETE CASCADE
 );
+GO
 
--- 10. Yêu Thích (Mới)
-CREATE TABLE YeuThich (
+CREATE TABLE DatTruoc (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL,
-    tay_cam_id INT NOT NULL,
-    ngayThem DATETIME2 DEFAULT GETDATE(),
-    CONSTRAINT FK_YeuThich_User FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT FK_YeuThich_TayCam FOREIGN KEY (tay_cam_id) REFERENCES TayCam(maTayCam) ON DELETE CASCADE
+    tenKhachHang NVARCHAR(100),
+    soDienThoai NVARCHAR(20),
+    email NVARCHAR(150),
+    diaChi NVARCHAR(255),
+    giaDatTruoc DECIMAL(18, 2),
+    tayCamId INT, 
+    ngayDat DATETIME2 DEFAULT GETDATE(), 
+    trangThai NVARCHAR(50) DEFAULT N'Chờ xác nhận', 
+    user_id INT,
+    FOREIGN KEY (tayCamId) REFERENCES TayCam(maTayCam) ON DELETE NO ACTION, 
+    CONSTRAINT FK_DT_User FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE NO ACTION
 );
 GO
 
--- 1. Insert Users (22 users)
-INSERT INTO users (username, password, role, hoTen, email, soDienThoai, diaChi) VALUES 
-('admin', '{noop}123', 'ADMIN', N'Quản Trị Viên', 'admin@store.com', '0909000000', N'Hà Nội'),
-('user', '{noop}123', 'USER', N'Người Dùng Mẫu', 'user@store.com', '0909111111', N'TP HCM'),
-('nguyenvana', '{noop}123', 'USER', N'Nguyễn Văn A', 'a@gmail.com', '0912345678', N'Đà Nẵng'),
-('tranthib', '{noop}123', 'USER', N'Trần Thị B', 'b@gmail.com', '0987654321', N'Hải Phòng'),
-('phamvanc', '{noop}123', 'USER', N'Phạm Văn C', 'c@gmail.com', '0901234567', N'Cần Thơ'),
-('lethid', '{noop}123', 'USER', N'Lê Thị D', 'd@gmail.com', '0933333333', N'Hà Nội'),
-('hoangvane', '{noop}123', 'USER', N'Hoàng Văn E', 'e@gmail.com', '0944444444', N'Nghệ An'),
-('dovanj', '{noop}123', 'USER', N'Đỗ Văn J', 'j@gmail.com', '0955555555', N'Thanh Hóa'),
-('buithik', '{noop}123', 'USER', N'Bùi Thị K', 'k@gmail.com', '0966666666', N'Bắc Ninh'),
-('dangvanl', '{noop}123', 'USER', N'Đặng Văn L', 'l@gmail.com', '0977777777', N'Hưng Yên'),
-('gamer01', '{noop}123', 'USER', N'Gamer Pro 1', 'g1@gmail.com', '0988888801', N'Hà Nội'),
-('gamer02', '{noop}123', 'USER', N'Gamer Pro 2', 'g2@gmail.com', '0988888802', N'TP HCM'),
-('gamer03', '{noop}123', 'USER', N'Gamer Pro 3', 'g3@gmail.com', '0988888803', N'Đà Lạt'),
-('gamer04', '{noop}123', 'USER', N'Gamer Pro 4', 'g4@gmail.com', '0988888804', N'Nha Trang'),
-('gamer05', '{noop}123', 'USER', N'Gamer Pro 5', 'g5@gmail.com', '0988888805', N'Vũng Tàu'),
-('streamer_x', '{noop}123', 'USER', N'Streamer X', 'sx@gmail.com', '0999999999', N'Hà Nội'),
-('mod_game', '{noop}123', 'ADMIN', N'Moderator', 'mod@store.com', '0911112222', N'TP HCM'),
-('test_acc1', '{noop}123', 'USER', N'Test Account 1', 't1@gmail.com', '0922223333', N'Huế'),
-('test_acc2', '{noop}123', 'USER', N'Test Account 2', 't2@gmail.com', '0933334444', N'Vinh'),
-('test_acc3', '{noop}123', 'USER', N'Test Account 3', 't3@gmail.com', '0944445555', N'Nam Định'),
-('vip_member', '{noop}123', 'USER', N'Vip Member', 'vip@gmail.com', '0955556666', N'Hà Nội'),
-('guest_pro', '{noop}123', 'USER', N'Guest Pro', 'guest@gmail.com', '0966667777', N'TP HCM');
-
--- 2. Insert Hãng Sản Xuất (10 Hãng)
-INSERT INTO HangSanXuat (tenHang, hinhAnh) VALUES 
-('Flydigi', '/images/Vader4Pro.jpg'),
-('Sony PlayStation', '/images/Vader4Pro.jpg'),
-('Microsoft Xbox', '/images/Vader4Pro.jpg'),
-('Nintendo', '/images/Vader4Pro.jpg'),
-('Razer', '/images/Vader4Pro.jpg'),
-('Logitech', '/images/Vader4Pro.jpg'),
-('8BitDo', '/images/Vader4Pro.jpg'),
-('GameSir', '/images/Vader4Pro.jpg'),
-('SteelSeries', '/images/Vader4Pro.jpg'),
-('Gulikit', '/images/Vader4Pro.jpg');
-
--- 3. Insert Thể Loại (10 Thể loại)
-INSERT INTO TheLoai (tenTheLoai) VALUES 
-(N'Tay cầm PC'), (N'Tay cầm PS5'), (N'Tay cầm PS4'), 
-(N'Tay cầm Xbox'), (N'Tay cầm Switch'), (N'Tay cầm Mobile'), 
-(N'Tay cầm Racing'), (N'Tay cầm Fighting'), (N'Phụ kiện tay cầm'), (N'Combo Gaming');
-
--- 4. Insert Phương Thức Thanh Toán (5 PT)
-INSERT INTO PhuongThucThanhToan (tenPhuongThuc) VALUES 
-(N'Thanh toán khi nhận hàng (COD)'),
-(N'Chuyển khoản ngân hàng (QR Code)'),
-(N'Ví điện tử Momo'),
-(N'Ví điện tử ZaloPay'),
-(N'Thẻ tín dụng Visa/Mastercard');
-
--- 5. Insert Khuyến Mãi (10 Mã)
-INSERT INTO KhuyenMai (maCode, phanTramGiam, ngayHetHan) VALUES 
-('WELCOME', 10, '2025-12-31'), ('TET2025', 20, '2025-02-15'), ('SUMMER', 15, '2025-06-30'),
-('BLACKFRIDAY', 50, '2025-11-28'), ('VIPMEMBER', 5, '2030-12-31'), ('GAMING', 8, '2025-10-10'),
-('FLYDIGI10', 10, '2025-12-31'), ('SONYFAN', 12, '2025-12-31'), ('XBOXON', 12, '2025-12-31'),
-('NINTENDO', 10, '2025-12-31');
-
--- 6. Insert Tay Cầm (25 Sản phẩm) - LƯU Ý: hinhAnh đều là Vader4Pro.jpg
-INSERT INTO TayCam (tenTayCam, hangSanXuatId, theLoaiId, gia, soLuongTon, releaseDate, preorder_discount, hinhAnh, moTa) VALUES
-(N'Flydigi Vader 4 Pro', 1, 1, 1200000, 50, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Tay cầm đỉnh cao cho PC'),
-(N'Sony DualSense Edge', 2, 2, 4500000, 10, DATEADD(DAY, 10, GETDATE()), 10, '/images/Vader4Pro.jpg', N'Tay cầm Pro cho PS5'),
-(N'Xbox Elite Series 2', 3, 4, 3500000, 25, DATEADD(DAY, -5, GETDATE()), 0, '/images/Vader4Pro.jpg', N'Huyền thoại tay cầm Xbox'),
-(N'Nintendo Switch Pro', 4, 5, 1600000, 100, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Tay cầm chính hãng Nintendo'),
-(N'Razer Wolverine V2', 5, 1, 2500000, 15, GETDATE(), 5, '/images/Vader4Pro.jpg', N'Led RGB Chroma cực đẹp'),
-(N'Logitech F710', 6, 1, 800000, 200, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Bền bỉ, giá rẻ, không dây'),
-(N'8BitDo Ultimate Bluetooth', 7, 5, 1100000, 60, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Kèm dock sạc tiện lợi'),
-(N'GameSir T4 Kaleid', 8, 1, 950000, 40, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Vỏ trong suốt led RGB'),
-(N'SteelSeries Stratus+', 9, 6, 1500000, 30, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Chuyên dụng cho Mobile/Android'),
-(N'Gulikit KingKong 2 Pro', 10, 5, 1050000, 55, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Analog từ tính không bị trôi'),
-(N'Flydigi Apex 4', 1, 1, 2100000, 5, DATEADD(DAY, 20, GETDATE()), 15, '/images/Vader4Pro.jpg', N'Màn hình LCD tích hợp'),
-(N'DualSense Standard White', 2, 2, 1700000, 150, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Tay cầm PS5 bản tiêu chuẩn'),
-(N'DualSense Cosmic Red', 2, 2, 1800000, 100, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Màu đỏ cá tính'),
-(N'Xbox Series X Controller Black', 3, 4, 1400000, 120, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Tay cầm Xbox Series mới nhất'),
-(N'Xbox Series X Controller Robot White', 3, 4, 1400000, 120, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Màu trắng tinh khôi'),
-(N'Joy-Con Neon Red/Blue', 4, 5, 1800000, 80, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Bộ đôi tay cầm cho Switch'),
-(N'Razer Kishi V2', 5, 6, 2200000, 40, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Biến điện thoại thành máy game'),
-(N'Logitech F310', 6, 1, 450000, 300, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Huyền thoại giá rẻ có dây'),
-(N'8BitDo Pro 2', 7, 5, 990000, 70, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Thiết kế Retro cổ điển'),
-(N'GameSir G7 SE', 8, 4, 1150000, 50, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Có Hall Effect chống trôi'),
-(N'Flydigi Direwolf 2', 1, 1, 850000, 90, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Ngon bổ rẻ cho sinh viên'),
-(N'Sony DualShock 4', 2, 3, 1200000, 50, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Tay cầm PS4 vẫn còn hot'),
-(N'Xbox Elite Series 2 Core', 3, 4, 2800000, 30, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Bản rút gọn của Elite 2'),
-(N'8BitDo Arcade Stick', 7, 8, 2500000, 15, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Bàn game thùng đối kháng'),
-(N'Hori Racing Wheel Apex', 2, 7, 3200000, 10, GETDATE(), 0, '/images/Vader4Pro.jpg', N'Vô lăng đua xe giá rẻ');
-
--- 7. Insert Đơn Hàng (25 Đơn)
-INSERT INTO DatTruoc (tenKhachHang, soDienThoai, email, diaChi, giaDatTruoc, trangThai, user_id, pttt_id, ngayDat) VALUES
-(N'Nguyễn Văn A', '0912345678', 'a@gmail.com', N'Đà Nẵng', 1200000, 'COMPLETED', 3, 1, DATEADD(DAY, -10, GETDATE())),
-(N'Trần Thị B', '0987654321', 'b@gmail.com', N'Hải Phòng', 4500000, 'PREORDER', 4, 2, DATEADD(DAY, -9, GETDATE())),
-(N'Phạm Văn C', '0901234567', 'c@gmail.com', N'Cần Thơ', 3500000, 'CANCELLED', 5, 3, DATEADD(DAY, -8, GETDATE())),
-(N'Lê Thị D', '0933333333', 'd@gmail.com', N'Hà Nội', 1600000, 'COMPLETED', 6, 1, DATEADD(DAY, -7, GETDATE())),
-(N'Hoàng Văn E', '0944444444', 'e@gmail.com', N'Nghệ An', 2500000, 'PREORDER', 7, 4, DATEADD(DAY, -6, GETDATE())),
-(N'Đỗ Văn J', '0955555555', 'j@gmail.com', N'Thanh Hóa', 800000, 'COMPLETED', 8, 5, DATEADD(DAY, -5, GETDATE())),
-(N'Bùi Thị K', '0966666666', 'k@gmail.com', N'Bắc Ninh', 1100000, 'COMPLETED', 9, 1, DATEADD(DAY, -4, GETDATE())),
-(N'Đặng Văn L', '0977777777', 'l@gmail.com', N'Hưng Yên', 950000, 'PREORDER', 10, 2, DATEADD(DAY, -3, GETDATE())),
-(N'Gamer Pro 1', '0988888801', 'g1@gmail.com', N'Hà Nội', 3000000, 'COMPLETED', 11, 3, DATEADD(DAY, -2, GETDATE())),
-(N'Gamer Pro 2', '0988888802', 'g2@gmail.com', N'TP HCM', 4200000, 'COMPLETED', 12, 1, DATEADD(DAY, -1, GETDATE())),
-(N'Gamer Pro 3', '0988888803', 'g3@gmail.com', N'Đà Lạt', 1700000, 'COMPLETED', 13, 2, GETDATE()),
-(N'Gamer Pro 4', '0988888804', 'g4@gmail.com', N'Nha Trang', 1800000, 'PREORDER', 14, 1, GETDATE()),
-(N'Gamer Pro 5', '0988888805', 'g5@gmail.com', N'Vũng Tàu', 1400000, 'CANCELLED', 15, 4, GETDATE()),
-(N'Khách Vãng Lai 1', '0900000001', 'kvl1@gmail.com', N'Hà Nội', 1200000, 'COMPLETED', NULL, 1, DATEADD(DAY, -15, GETDATE())),
-(N'Khách Vãng Lai 2', '0900000002', 'kvl2@gmail.com', N'HCM', 1700000, 'PREORDER', NULL, 2, DATEADD(DAY, -14, GETDATE())),
-(N'Nguyễn Văn A', '0912345678', 'a@gmail.com', N'Đà Nẵng', 850000, 'COMPLETED', 3, 1, DATEADD(DAY, -1, GETDATE())),
-(N'Trần Thị B', '0987654321', 'b@gmail.com', N'Hải Phòng', 1200000, 'COMPLETED', 4, 3, DATEADD(DAY, -20, GETDATE())),
-(N'Streamer X', '0999999999', 'sx@gmail.com', N'Hà Nội', 10000000, 'COMPLETED', 16, 5, DATEADD(DAY, -2, GETDATE())),
-(N'Test Account 1', '0922223333', 't1@gmail.com', N'Huế', 2100000, 'PREORDER', 18, 2, GETDATE()),
-(N'Test Account 2', '0933334444', 't2@gmail.com', N'Vinh', 450000, 'COMPLETED', 19, 1, DATEADD(DAY, -5, GETDATE())),
-(N'Vip Member', '0955556666', 'vip@gmail.com', N'Hà Nội', 5000000, 'COMPLETED', 21, 5, DATEADD(DAY, -12, GETDATE())),
-(N'Guest Pro', '0966667777', 'guest@gmail.com', N'TP HCM', 990000, 'COMPLETED', 22, 1, DATEADD(DAY, -8, GETDATE())),
-(N'Phạm Văn C', '0901234567', 'c@gmail.com', N'Cần Thơ', 2500000, 'PREORDER', 5, 2, GETDATE()),
-(N'Lê Thị D', '0933333333', 'd@gmail.com', N'Hà Nội', 1150000, 'COMPLETED', 6, 1, DATEADD(DAY, -3, GETDATE())),
-(N'Hoàng Văn E', '0944444444', 'e@gmail.com', N'Nghệ An', 2800000, 'CANCELLED', 7, 3, DATEADD(DAY, -1, GETDATE()));
-
--- 8. Insert DatTruocItem (25 Items)
-INSERT INTO DatTruocItem (orderId, tayCamId, tenSanPham, donGia, soLuong) VALUES
-(1, 1, N'Flydigi Vader 4 Pro', 1200000, 1),
-(2, 2, N'Sony DualSense Edge', 4500000, 1),
-(3, 3, N'Xbox Elite Series 2', 3500000, 1),
-(4, 4, N'Nintendo Switch Pro', 1600000, 1),
-(5, 5, N'Razer Wolverine V2', 2500000, 1),
-(6, 6, N'Logitech F710', 800000, 1),
-(7, 7, N'8BitDo Ultimate Bluetooth', 1100000, 1),
-(8, 8, N'GameSir T4 Kaleid', 950000, 1),
-(9, 9, N'SteelSeries Stratus+', 1500000, 2),
-(10, 11, N'Flydigi Apex 4', 2100000, 2),
-(11, 12, N'DualSense Standard White', 1700000, 1),
-(12, 16, N'Joy-Con Neon Red/Blue', 1800000, 1),
-(13, 14, N'Xbox Series X Controller Black', 1400000, 1),
-(14, 1, N'Flydigi Vader 4 Pro', 1200000, 1),
-(15, 12, N'DualSense Standard White', 1700000, 1),
-(16, 21, N'Flydigi Direwolf 2', 850000, 1),
-(17, 1, N'Flydigi Vader 4 Pro', 1200000, 1),
-(18, 2, N'Sony DualSense Edge', 4500000, 2),
-(18, 1, N'Flydigi Vader 4 Pro', 1200000, 1),
-(19, 11, N'Flydigi Apex 4', 2100000, 1),
-(20, 18, N'Logitech F310', 450000, 1),
-(21, 2, N'Sony DualSense Edge', 4500000, 1),
-(22, 19, N'8BitDo Pro 2', 990000, 1),
-(23, 24, N'8BitDo Arcade Stick', 2500000, 1),
-(24, 20, N'GameSir G7 SE', 1150000, 1),
-(25, 23, N'Xbox Elite Series 2 Core', 2800000, 1);
-
--- 9. Insert Đánh Giá (25 Review)
-INSERT INTO DanhGia (tenNguoiDanhGia, soSaoDanhGia, noiDung, tayCamId, ngayDanhGia) VALUES
-(N'Nguyễn Văn A', 5, N'Hàng ngon, ship nhanh', 1, GETDATE()),
-(N'Lê Thị B', 4, N'Hơi đắt nhưng xắt ra miếng', 2, DATEADD(DAY, -1, GETDATE())),
-(N'Phạm Văn C', 3, N'Tạm ổn, hộp hơi móp', 3, DATEADD(DAY, -2, GETDATE())),
-(N'Trần D', 5, N'Quá tuyệt vời, Flydigi mãi đỉnh', 1, DATEADD(DAY, -3, GETDATE())),
-(N'User E', 5, N'DualSense rung phê thật', 12, DATEADD(DAY, -4, GETDATE())),
-(N'Gamer 1', 4, N'Xbox cầm đầm tay', 14, DATEADD(DAY, -5, GETDATE())),
-(N'Gamer 2', 5, N'Switch Pro pin trâu vãi', 4, DATEADD(DAY, -6, GETDATE())),
-(N'Gamer 3', 2, N'Logitech F310 nút hơi cứng', 18, DATEADD(DAY, -7, GETDATE())),
-(N'Gamer 4', 5, N'Led RGB đẹp nhức nách', 8, DATEADD(DAY, -8, GETDATE())),
-(N'Gamer 5', 4, N'Giá hợp lý cho sinh viên', 21, DATEADD(DAY, -9, GETDATE())),
-(N'Khách vãng lai', 5, N'Shop tư vấn nhiệt tình', 1, DATEADD(DAY, -10, GETDATE())),
-(N'Test User', 3, N'Giao hàng hơi chậm', 6, DATEADD(DAY, -11, GETDATE())),
-(N'Fan Sony', 5, N'Sony vô đối', 2, DATEADD(DAY, -12, GETDATE())),
-(N'Fan Xbox', 5, N'Xbox tay cầm ergonomic nhất', 3, DATEADD(DAY, -13, GETDATE())),
-(N'Fan Nintendo', 4, N'Drift analog nhẹ', 16, DATEADD(DAY, -14, GETDATE())),
-(N'Reviewer', 5, N'Đã test, deadzone thấp', 11, DATEADD(DAY, -15, GETDATE())),
-(N'Người mua', 4, N'Đóng gói kỹ', 7, DATEADD(DAY, -16, GETDATE())),
-(N'Ẩn danh', 1, N'Hàng lỗi, đã đổi trả', 6, DATEADD(DAY, -17, GETDATE())),
-(N'Khách quen', 5, N'Mua cái thứ 3 rồi', 1, DATEADD(DAY, -18, GETDATE())),
-(N'Streamer', 5, N'Livestream bao mượt', 2, DATEADD(DAY, -19, GETDATE())),
-(N'Pro Player', 5, N'Phản hồi nhanh', 11, DATEADD(DAY, -20, GETDATE())),
-(N'Casual Gamer', 4, N'Dễ kết nối', 10, DATEADD(DAY, -21, GETDATE())),
-(N'Mobile Gamer', 5, N'Kẹp điện thoại chắc chắn', 17, DATEADD(DAY, -22, GETDATE())),
-(N'Retro Fan', 5, N'Nhìn hoài cổ đẹp', 19, DATEADD(DAY, -23, GETDATE())),
-(N'Racing Boy', 5, N'Vô lăng quay mượt', 25, DATEADD(DAY, -24, GETDATE()));
-
--- 10. Insert Yêu Thích (25 items)
-INSERT INTO YeuThich (user_id, tay_cam_id, ngayThem) VALUES
-(3, 1, GETDATE()), (3, 2, GETDATE()),
-(4, 3, GETDATE()), (4, 4, GETDATE()),
-(5, 5, GETDATE()), (5, 1, GETDATE()),
-(6, 11, GETDATE()), (6, 12, GETDATE()),
-(7, 2, GETDATE()), (7, 14, GETDATE()),
-(8, 1, GETDATE()), (8, 21, GETDATE()),
-(9, 25, GETDATE()), (9, 24, GETDATE()),
-(10, 8, GETDATE()), (10, 9, GETDATE()),
-(11, 1, GETDATE()), (11, 11, GETDATE()),
-(12, 2, GETDATE()), (12, 22, GETDATE()),
-(13, 16, GETDATE()), (13, 17, GETDATE()),
-(14, 18, GETDATE()), (14, 19, GETDATE()),
-(15, 20, GETDATE());
+CREATE TABLE DatTruocItem (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    orderId INT NOT NULL,
+    tayCamId INT NOT NULL,
+    tenSanPham NVARCHAR(255) NULL, 
+    donGia DECIMAL(18,2) NOT NULL,
+    soLuong INT NOT NULL,
+    CONSTRAINT FK_DTI_Order FOREIGN KEY (orderId) REFERENCES DatTruoc(id),
+    CONSTRAINT FK_DTI_TayCam FOREIGN KEY (tayCamId) REFERENCES TayCam(maTayCam)
+);
 GO
 
-DROP DATABASE asm_taycam
+INSERT INTO users (username, password, role, hoTen, email, diaChi)
+VALUES 
+('admin', '{noop}123', 'ADMIN', N'Quản trị viên', 'admin@shop.com', N'Hà Nội'), 
+('user_staff1', '{noop}123', 'USER', N'Nhân viên cũ 1', 'user_staff1@shop.com', N'Hà Nội'),
+('user_staff2', '{noop}123', 'USER', N'Nhân viên cũ 2', 'user_staff2@shop.com', N'Đà Nẵng'),
+('user1', '{noop}123', 'USER', N'Nguyễn Văn A', 'user1@mail.com', N'TP HCM'),
+('user2', '{noop}123', 'USER', N'Lê Thị B', 'user2@mail.com', N'Hà Nội'),
+('user3', '{noop}123', 'USER', N'Phạm Văn C', 'user3@mail.com', N'Cần Thơ'),
+('user4', '{noop}123', 'USER', N'Trần Đình D', 'user4@mail.com', N'Hải Phòng'),
+('user5', '{noop}123', 'USER', N'Hoàng Thị E', 'user5@mail.com', N'Nghệ An'),
+('user6', '{noop}123', 'USER', N'Đỗ Minh F', 'user6@mail.com', N'Đà Nẵng'),
+('user7', '{noop}123', 'USER', N'Vũ Kim G', 'user7@mail.com', N'Đồng Nai'),
+('user8', '{noop}123', 'USER', N'Nguyễn Văn H', 'user8@mail.com', N'Hải Dương'),
+('user9', '{noop}123', 'USER', N'Lê Văn K', 'user9@mail.com', N'Quảng Ninh'),
+('user10', '{noop}123', 'USER', N'Trần Thị L', 'user10@mail.com', N'Bình Dương'),
+('user11', '{noop}123', 'USER', N'Phan Đình M', 'user11@mail.com', N'Hà Tĩnh'),
+('user12', '{noop}123', 'USER', N'Đỗ Thị N', 'user12@mail.com', N'Thái Bình'),
+('user13', '{noop}123', 'USER', N'Hoàng Gia P', 'user13@mail.com', N'Vũng Tàu'),
+('user14', '{noop}123', 'USER', N'Vũ Đình Q', 'user14@mail.com', N'Tây Ninh'),
+('user15', '{noop}123', 'USER', N'Lý Quang R', 'user15@mail.com', N'Quảng Nam'),
+('user16', '{noop}123', 'USER', N'Trương Thị S', 'user16@mail.com', N'Bình Thuận'),
+('user17', '{noop}123', 'USER', N'Phạm Văn T', 'user17@mail.com', N'Bắc Ninh'); -- ID 20
+GO
+
+INSERT INTO TayCam (hinhAnh, tenTayCam, hangSanXuat, gia, soLuongTon, releaseDate, preorder_discount)
+VALUES
+('/images/Vader4Pro.jpg', N'Tay cầm DualSense Edge', N'Sony', 4500000, 40, DATEADD(DAY, 5, GETDATE()), 10.0), 
+('/images/Vader4Pro.jpg', N'Xbox Elite Series 2 Core', N'Microsoft', 4000000, 60, DATEADD(DAY, -10, GETDATE()), 0.0),
+('/images/Vader4Pro.jpg', N'8BitDo Ultimate C', N'8BitDo', 800000, 75, DATEADD(DAY, 2, GETDATE()), 5.0), 
+('/images/Vader4Pro.jpg', N'Razer Wolverine V2 Pro', N'Razer', 5200000, 30, GETDATE(), 0.0),
+('/images/Vader4Pro.jpg', N'Flydigi Vader 3 Pro', N'Flydigi', 1490000, 90, DATEADD(DAY, -20, GETDATE()), 0.0),
+('/images/Vader4Pro.jpg', N'PS5 DualSense Cosmic Red', N'Sony', 1800000, 55, DATEADD(DAY, 10, GETDATE()), 8.0), 
+('/images/Vader4Pro.jpg', N'Xbox Series X Controller', N'Microsoft', 1590000, 120, GETDATE(), 0.0),
+('/images/Vader4Pro.jpg', N'8BitDo SN30 Pro', N'8BitDo', 950000, 80, DATEADD(DAY, -1, GETDATE()), 0.0),
+('/images/Vader4Pro.jpg', N'Logitech G F710', N'Logitech', 650000, 150, DATEADD(DAY, 30, GETDATE()), 12.0), 
+('/images/Vader4Pro.jpg', N'Asus ROG Raikiri Pro', N'Asus', 3900000, 25, GETDATE(), 0.0),
+('/images/Vader4Pro.jpg', N'Nintendo Switch Pro Controller', N'Nintendo', 1850000, 70, DATEADD(DAY, -50, GETDATE()), 0.0),
+('/images/Vader4Pro.jpg', N'GuliKit KingKong 2 Pro', N'GuliKit', 1350000, 110, DATEADD(DAY, 15, GETDATE()), 10.0), 
+('/images/Vader4Pro.jpg', N'PowerA Enhanced Wired', N'PowerA', 700000, 180, GETDATE(), 0.0),
+('/images/Vader4Pro.jpg', N'SteelSeries Stratus+', N'SteelSeries', 1100000, 45, DATEADD(DAY, 7, GETDATE()), 7.0), 
+('/images/Vader4Pro.jpg', N'Hori Horipad Mini', N'Hori', 550000, 200, GETDATE(), 0.0),
+('/images/Vader4Pro.jpg', N'Scuf Reflex FPS', N'Scuf', 6800000, 15, DATEADD(DAY, 4, GETDATE()), 15.0), 
+('/images/Vader4Pro.jpg', N'EasySMX X10', N'EasySMX', 750000, 100, GETDATE(), 0.0),
+('/images/Vader4Pro.jpg', N'GameSir T4 Pro', N'GameSir', 590000, 130, DATEADD(DAY, -3, GETDATE()), 0.0),
+('/images/Vader4Pro.jpg', N'Astro C40 TR', N'Astro', 4800000, 20, DATEADD(DAY, 6, GETDATE()), 10.0), 
+('/images/Vader4Pro.jpg', N'Thrustmaster eSwap X Pro', N'Thrustmaster', 3200000, 50, GETDATE(), 0.0);
+GO
+
+INSERT INTO DanhGia (tenNguoiDanhGia, soSaoDanhGia, noiDung, tayCamId)
+VALUES
+(N'Khách A', 5, N'Sản phẩm tuyệt vời.', 1), (N'Khách B', 4, N'Pin hơi yếu.', 2),
+(N'Khách C', 3, N'Giao hàng nhanh.', 3), (N'Khách D', 5, N'Hoàn hảo cho PC.', 4),
+(N'Khách E', 4, N'Đã sử dụng rất bền.', 5), (N'Khách F', 5, N'Màu sắc đẹp, nút bấm nhạy.', 6),
+(N'Khách G', 4, N'Cần phải làm quen với bố cục nút.', 7), (N'Khách H', 5, N'Giá hợp lý, chất lượng tốt.', 8),
+(N'Khách I', 3, N'Thiết kế hơi cũ.', 9), (N'Khách J', 5, N'Rất thích các tính năng rung.', 10),
+(N'Khách K', 4, N'Sử dụng tốt cho game hành động.', 11), (N'Khách L', 5, N'Giao diện thân thiện.', 12),
+(N'Khách M', 4, N'Phù hợp với tay nhỏ.', 13), (N'Khách N', 5, N'Chơi mượt, không có độ trễ.', 14),
+(N'Khách O', 3, N'Cần cải thiện chất liệu.', 15), (N'Khách P', 5, N'Hài lòng với các nút macro.', 16),
+(N'Khách Q', 4, N'Kết nối nhanh chóng.', 17), (N'Khách R', 5, N'Đáng mua, pin trâu.', 18),
+(N'Khách S', 4, N'Thiết kế đẹp, cầm chắc tay.', 19), (N'Khách T', 5, N'Chuyên nghiệp, nhiều tuỳ chỉnh.', 20);
+GO
+
+INSERT INTO DatTruoc (tenKhachHang, soDienThoai, email, diaChi, giaDatTruoc, tayCamId, ngayDat, trangThai, user_id)
+VALUES
+(N'Admin Order 1', '0901xxxx01', 'admin@shop.com', N'Hà Nội', 4050000, 1, DATEADD(DAY, -15, GETDATE()), N'Đã giao', 1), 
+(N'User Staff 1', '0901xxxx02', 'user_staff1@shop.com', N'Đà Nẵng', 4000000, 2, DATEADD(DAY, -10, GETDATE()), N'Đã giao', 2),
+(N'User Staff 2', '0901xxxx03', 'user_staff2@shop.com', N'TP HCM', 760000, 3, DATEADD(DAY, -5, GETDATE()), N'Đang xử lý', 3),
+(N'User 1', '0901xxxx04', 'user1@mail.com', N'Hà Nội', 5200000, 4, GETDATE(), N'Chờ xác nhận', 4),
+(N'User 2', '0901xxxx05', 'user2@mail.com', N'Cần Thơ', 1490000, 5, GETDATE(), N'Đang xử lý', 5),
+(N'User 3', '0901xxxx06', 'user3@mail.com', N'Hải Phòng', 1656000, 6, GETDATE(), N'Chờ xác nhận', 6),
+(N'User 4', '0901xxxx07', 'user4@mail.com', N'Nghệ An', 1590000, 7, GETDATE(), N'Đang xử lý', 7),
+(N'User 5', '0901xxxx08', 'user5@mail.com', N'Đà Nẵng', 950000, 8, GETDATE(), N'Chờ xác nhận', 8),
+(N'User 6', '0901xxxx09', 'user6@mail.com', N'Đồng Nai', 572000, 9, GETDATE(), N'Đã hủy', 9),
+(N'User 7', '0901xxxx10', 'user7@mail.com', N'Hải Dương', 3900000, 10, GETDATE(), N'Chờ xác nhận', 10),
+(N'User 8', '0901xxxx11', 'user8@mail.com', N'Quảng Ninh', 1850000, 11, GETDATE(), N'Đang xử lý', 11),
+(N'User 9', '0901xxxx12', 'user9@mail.com', N'Bình Dương', 1350000, 12, GETDATE(), N'Chờ xác nhận', 12),
+(N'User 10', '0901xxxx13', 'user10@mail.com', N'Hà Tĩnh', 700000, 13, GETDATE(), N'Đang xử lý', 13),
+(N'User 11', '0901xxxx14', 'user11@mail.com', N'Thái Bình', 1023000, 14, GETDATE(), N'Chờ xác nhận', 14),
+(N'User 12', '0901xxxx15', 'user12@mail.com', N'Vũng Tàu', 550000, 15, GETDATE(), N'Đã giao', 15),
+(N'User 13', '0901xxxx16', 'user13@mail.com', N'Tây Ninh', 5780000, 16, GETDATE(), N'Đang xử lý', 16),
+(N'User 14', '0901xxxx17', 'user14@mail.com', N'Quảng Nam', 750000, 17, GETDATE(), N'Chờ xác nhận', 17),
+(N'User 15', '0901xxxx18', 'user15@mail.com', N'Bình Thuận', 590000, 18, GETDATE(), N'Đang xử lý', 18),
+(N'User 16', '0901xxxx19', 'user16@mail.com', N'Bắc Ninh', 4320000, 19, GETDATE(), N'Chờ xác nhận', 19),
+(N'User 17', '0901xxxx20', 'user17@mail.com', N'Cần Thơ', 3200000, 20, GETDATE(), N'Đã giao', 20);
+GO
+
+INSERT INTO DatTruocItem (orderId, tayCamId, tenSanPham, donGia, soLuong)
+VALUES
+(1, 1, N'Tay cầm DualSense Edge', 4050000, 1), (2, 2, N'Xbox Elite Series 2 Core', 4000000, 1),
+(3, 3, N'8BitDo Ultimate C', 800000, 1), (4, 4, N'Razer Wolverine V2 Pro', 5200000, 1),
+(5, 5, N'Flydigi Vader 3 Pro', 1490000, 1), (6, 6, N'PS5 DualSense Cosmic Red', 1656000, 1),
+(7, 7, N'Xbox Series X Controller', 1590000, 1), (8, 8, N'8BitDo SN30 Pro', 950000, 1),
+(9, 9, N'Logitech G F710', 572000, 1), (10, 10, N'Asus ROG Raikiri Pro', 3900000, 1),
+(11, 11, N'Nintendo Switch Pro Controller', 1850000, 1), (12, 12, N'GuliKit KingKong 2 Pro', 1350000, 1),
+(13, 13, N'PowerA Enhanced Wired', 700000, 1), (14, 14, N'SteelSeries Stratus+', 1023000, 1),
+(15, 15, N'Hori Horipad Mini', 550000, 1), (16, 16, N'Scuf Reflex FPS', 5780000, 1),
+(17, 17, N'EasySMX X10', 750000, 1), (18, 18, N'GameSir T4 Pro', 590000, 1),
+(19, 19, N'Astro C40 TR', 4320000, 1), (20, 20, N'Thrustmaster eSwap X Pro', 3200000, 1);
+GO
+
+SELECT * FROM TayCam;
+SELECT * FROM DanhGia;
+SELECT * FROM DatTruoc;
+SELECT * FROM users;
+SELECT * FROM DatTruocItem;
